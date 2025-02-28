@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { analyze_pdf, getRfpAnalysis } from '../../api'
+import { analyzePdf, getRfpAnalysis } from '../../api'
 const Rfp = () => {
   const [file, setFile] = useState<File | null>(null)
 
@@ -25,7 +25,7 @@ const Rfp = () => {
     formData.append('pdf', file)
 
     try {
-      const raw_response = await analyze_pdf(formData)
+      const raw_response = await analyzePdf(formData)
       console.log(raw_response)
       setData(await getRfpAnalysis(raw_response))
       console.log('Succesfully uploaded pdf')
