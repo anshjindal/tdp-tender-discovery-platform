@@ -88,7 +88,7 @@ app.get('/', (req, res) => {
 app.post('/generateLeads', async (req, res) => {
   try {
     const completion = await openai.chat.completions.create({
-      model: process.env.AI_MODEL_ID || '',
+      model: process.env.GEMINI_AI_MODEL_ID || '',
       messages: [
         { role: 'developer', content: 'You are a helpful assistant.' },
         { role: 'user', content: req.body.prompt },
@@ -229,6 +229,8 @@ app.post('/filterOpenTenderNotices', async (req, res) => {
       .select(
         'referenceNumber-numeroReference, tenderDescription-descriptionAppelOffres-eng'
       )
+      .limit(200);
+  
 
     if (error) {
       throw new Error(`Failed to fetch tender notices: ${error.message}`)
@@ -243,13 +245,15 @@ app.post('/filterOpenTenderNotices', async (req, res) => {
       }
     )
 
-    const filteredIDs = response.data.matches
+    const filteredIDs = JSON.parse(response.data).matches
+
 
     // Get full data for matched tenders
     const { data: matchedData, error: matchError } = await supabase
       .from('open_tender_notices')
       .select('*')
       .in('referenceNumber-numeroReference', filteredIDs)
+    
 
     if (matchError) {
       throw new Error(`Failed to fetch matched data: ${matchError.message}`)
