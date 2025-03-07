@@ -1,12 +1,7 @@
 import { useEffect, useState } from 'react'
-import {
-  getFilteredTenderNoticesFromDB, TenderNoticeInterface
-} from '../../api'
+import { getFilteredTenderNoticesFromDB, TenderNoticeInterface } from '../../api'
 
 export function FilteredTenderData() {
-  // const [message, setMessage] = useState('')
-  // const [EmployeData, setEmployeeData] = useState<Employee[]>([])
-
   const [tableData, setTableData] = useState<TenderNoticeInterface[]>([])
 
   useEffect(() => {
@@ -16,30 +11,35 @@ export function FilteredTenderData() {
     getOpenTenderNoticesData()
   }, [])
 
-  const TenderTable = ({ data }: { data: any[] }) => {
-    const headers = Object.keys(data[0])
-
+  const TenderTable = ({ data }: { data: TenderNoticeInterface[] }) => {
+    const headers = data.length > 0 ? Object.keys(data[0]) : []
+  
     return (
-      <table>
-        <thead>
-          <tr>
-            {headers.map((header) => (
-              <th key={header}>{header}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((row, index) => (
-            <tr key={index}>
-              {headers.map((header, cellIndex) => (
-                <td key={cellIndex}>
-                  <div className="max-h-12 overflow-y-auto">{row[header]}</div>
-                </td>
+      <div className="overflow-x-auto shadow-md border-b mb-6">
+        <table className="min-w-full table-auto border-collapse">
+          <thead>
+            <tr className="bg-gray-800 text-white">
+              {headers.map((header) => (
+                <th key={header} className="p-3 text-left border px-2">{header}</th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data.map((row, index) => (
+              <tr key={index} className="border-t">
+                {headers.map((header) => (
+                  <td key={header} className="p-3 border px-2">
+                    <div className="max-h-12 overflow-y-auto">
+                      {/* Cast header to keyof TenderNoticeInterface */}
+                      {row[header as keyof TenderNoticeInterface]}
+                    </div>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     )
   }
 
@@ -47,7 +47,9 @@ export function FilteredTenderData() {
     <>
       {tableData && tableData.length > 0 ? (
         <TenderTable data={tableData} />
-      ) : null}
+      ) : (
+        <p>No data available</p>
+      )}
     </>
   )
 }

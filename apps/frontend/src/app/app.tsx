@@ -1,13 +1,15 @@
 import { Route, Routes, Link, Outlet } from "react-router-dom";
 import TenderData from "./pages/TenderData";
-import LeadGenChatV2 from "./pages/LeadGenChatV2";
+import LeadGen from "./pages/LeadGen";
 import Rfp from "./pages/Rfp";
 import logo from "../assets/wouessi-new-logo.png";
+import { Navigate } from 'react-router-dom';
+
 
 
 function Layout() {
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
       <nav className="w-64 bg-gray-800 text-white p-5 space-y-4">
         <img src={logo} alt="Wouessi Logo" className="w-32 h-auto" />
@@ -18,7 +20,7 @@ function Layout() {
             </Link>
           </li>
           <li>
-            <Link to="/leadgenchatv2" className="block p-3 bg-gray-700 rounded">
+            <Link to="/leadgen" className="block p-3 bg-gray-700 rounded">
               Lead Generation
             </Link>
           </li>
@@ -36,7 +38,7 @@ function Layout() {
       </nav>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar */}
         <header className="bg-gray-900 text-white p-4 text-xl font-bold">
           Tender Discovery Platform
@@ -51,13 +53,17 @@ function Layout() {
   );
 }
 
+
 export function App() {
   return (
     <Routes>
+      {/* Redirect from the root path to /tenderdata */}
+      <Route path="/" element={<Navigate to="/tenderdata" />} />
+      
       {/* Apply Layout to all pages */}
       <Route path="/" element={<Layout />}>
         <Route path="tenderdata" element={<TenderData />} />
-        <Route path="leadgenchatv2" element={<LeadGenChatV2 />} />
+        <Route path="leadgen" element={<LeadGen />} />
         <Route path="rfp" element={<Rfp />} />
       </Route>
     </Routes>
