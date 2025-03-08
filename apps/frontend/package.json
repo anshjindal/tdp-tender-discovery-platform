@@ -41,6 +41,7 @@
   },
   "tags": [],
   "dependencies": {
+    "lucide-react": "^0.477.0",
     "react-router-dom": "^7.1.5"
   }
 }
