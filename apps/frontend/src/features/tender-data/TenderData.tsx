@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import {
   getOpenTenderNoticesFromDB,
   TenderNoticeInterface
-} from '../../api'
+} from '../../api/api'
 
 
 

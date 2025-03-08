@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { analyzePdf, getRfpAnalysis } from '../../api'
+import { analyzePdf, getRfpAnalysis } from '../../api/api'
 
-const Rfp = () => {
+const CaMain = () => {
   const [file, setFile] = useState<File | null>(null)
 
   interface PdfData {
@@ -36,6 +36,8 @@ const Rfp = () => {
   }
   return (
     <>
+    <h1>Capability Assessment Module</h1>
+
       <div>
         <form onSubmit={handleSubmit}>
           <h1>Upload PDF</h1>
@@ -66,4 +68,4 @@ const Rfp = () => {
   )
 }
 
-export default Rfp
+export default CaMain

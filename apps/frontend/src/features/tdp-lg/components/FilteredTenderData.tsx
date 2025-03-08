@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getFilteredTenderNoticesFromDB, TenderNoticeInterface } from '../../api'
+import { getFilteredTenderNoticesFromDB, TenderNoticeInterface } from '../../../api/api'
 
 export function FilteredTenderData() {
   const [tableData, setTableData] = useState<TenderNoticeInterface[]>([])

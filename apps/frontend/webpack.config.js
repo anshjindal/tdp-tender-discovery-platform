@@ -28,9 +28,9 @@ module.exports = {
       tsConfig: './tsconfig.app.json',
       compiler: 'babel', // Using Babel for compatibility
       main: './src/main.tsx', // Main entry file for the app
-      index: './src/index.html', // HTML template
+      index: './public/index.html', // HTML template
       baseHref: '/', // Base URL for the app
-      assets: ['./src/favicon.ico', './src/assets'], // Static assets
+      assets: ['./public/favicon.ico', './src/assets'], // Static assets
       styles: ['./src/styles.css'], // Global styles
       outputHashing: process.env.NODE_ENV === 'production' ? 'all' : 'none', // Hashing for production
       optimization: process.env.NODE_ENV === 'production', // Enable optimization in production

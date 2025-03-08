@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { filterOpenTenderNotices, getOpenTenderNoticesToDB } from '../../api'
-import { FilteredTenderData } from './FilteredTenderData'
+import { filterOpenTenderNotices, getOpenTenderNoticesToDB } from '../../api/api'
+import { FilteredTenderData } from './components/FilteredTenderData'
 
-const LeadGenMain = () => {
+const LgMain = () => {
   const [formData, setFormData] = useState({ prompt: '' })
   const [showData, setShowData] = useState(false)
 
@@ -31,6 +31,7 @@ const LeadGenMain = () => {
 
   return (
     <>
+    <h1>Lead Generation Module</h1>
       <button
         onClick={refreshTenders}
         className="text-white bg-black h-12 text-2xl font-bold mb-4"
@@ -58,4 +59,4 @@ const LeadGenMain = () => {
   )
 }
 
-export default LeadGenMain
+export default LgMain

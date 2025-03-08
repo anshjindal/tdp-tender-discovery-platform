@@ -1,0 +1,1 @@
+ # Common layouts (Header, Sidebar, Footer)
