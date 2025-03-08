@@ -31,7 +31,7 @@ module.exports = {
       index: './public/index.html', // HTML template
       baseHref: '/', // Base URL for the app
       assets: ['./public/favicon.ico', './src/assets'], // Static assets
-      styles: ['./src/styles.css'], // Global styles
+      styles: ['./src/styles/styles.css'], // Global styles
       outputHashing: process.env.NODE_ENV === 'production' ? 'all' : 'none', // Hashing for production
       optimization: process.env.NODE_ENV === 'production', // Enable optimization in production
     }),
