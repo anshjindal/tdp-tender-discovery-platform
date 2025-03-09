@@ -5,7 +5,7 @@ import cors from 'cors'
 import axios from 'axios'
 import Papa from 'papaparse'
 import { createClient } from '@supabase/supabase-js'
-import uploadRoutes from './routes/uploadRoutes' // <-- Added import for upload route
+import uploadRoutes from './routes/uploadRoutes' // import for upload route
 
 // Initialize Supabase client
 const supabase = createClient(
@@ -393,7 +393,7 @@ app.get('/getOpenTenderNoticesFromDB', async (req, res) => {
 })
 
 // New route for file uploads
-app.use('/upload', uploadRoutes)
+app.use('/api/v1/documents/upload', uploadRoutes)
 
 // Serve static files from the 'assets' folder
 app.use('/assets', express.static(path.join(__dirname, 'assets')))

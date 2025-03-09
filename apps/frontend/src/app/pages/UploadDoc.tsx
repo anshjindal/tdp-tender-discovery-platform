@@ -49,7 +49,7 @@ const App: React.FC = () => {
     setProgress((prev) => ({ ...prev, started: true }))
 
     axios
-      .post('http://localhost:3000/upload', fd, {
+      .post('http://localhost:3000/api/v1/documents/upload', fd, {
         onUploadProgress: (progressEvent) => {
           // Manually compute progress if your Axios version doesn't provide "progressEvent.progress"
           const total = progressEvent.total || 0
