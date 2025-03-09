@@ -42,5 +42,14 @@
     "@types/papaparse": "^5.3.15",
     "@types/pg": "^8.11.11",
     "@types/pg-copy-streams": "^1.2.5"
-  }
+  },
+
+
+  "scripts": {
+  "postinstall": "python -m pip install --no-cache-dir spacy nltk pymupdf python-docx && python -c \"import nltk; nltk.download('vader_lexicon'); nltk.download('punkt')\""
+}
+
+
+
+
 }
