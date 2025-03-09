@@ -6,6 +6,9 @@ import axios from 'axios'
 import Papa from 'papaparse'
 import { createClient } from '@supabase/supabase-js'
 
+const uploadRoutes = require('./routes/uploadRoutes');
+const errorHandler = require('./middleware/errorHandler');
+
 // Initialize Supabase client
 const supabase = createClient(
   process.env.SUPABASE_URL || '',
@@ -63,6 +66,16 @@ const targetColumns = [
 const app = express()
 app.use(cors({ origin: '*' })) // Allow all origins
 app.use(express.json({ limit: '10mb' })) // Limit is 1mb so can parse more tenders
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Routes
+app.use('/upload', uploadRoutes);
+
+// Global error handling middleware
+app.use(errorHandler);
+
 
 // Initialize OpenAI client
 const openai = new OpenAI({
