@@ -6,10 +6,8 @@
     "types": ["node", "express"],
     "rootDir": "src",
     "moduleResolution": "nodenext",
-    "allowJs": true,           // added for .js files
-    "checkJs": false,          // ^
     "tsBuildInfoFile": "out-tsc/backend/tsconfig.app.tsbuildinfo"
   },
-  "include": ["src/**/*.ts", "src/**/*.js"],
+  "include": ["src/**/*.ts"],
   "exclude": []
 }
