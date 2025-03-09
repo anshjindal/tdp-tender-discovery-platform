@@ -5,6 +5,7 @@ import cors from 'cors'
 import axios from 'axios'
 import Papa from 'papaparse'
 import { createClient } from '@supabase/supabase-js'
+import uploadRoutes from './routes/uploadRoutes' // import for upload route
 
 // Initialize Supabase client
 const supabase = createClient(
@@ -149,7 +150,7 @@ app.post('/filterTendersWithAI', async (req, res) => {
       messages: [
         {
           role: 'assistant',
-          content: `You are an AI that helps users filter a database of government tenders. 
+          content: `You are an AI that helps users filter a database of government tenders.
 You MUST return a valid JSON response matching this exact format:
 {
   "matches": ["REF1", "REF2"]
@@ -391,6 +392,9 @@ app.get('/getOpenTenderNoticesFromDB', async (req, res) => {
   }
 })
 
+// New route for file uploads
+app.use('/api/v1/documents/upload', uploadRoutes)
+
 // Serve static files from the 'assets' folder
 app.use('/assets', express.static(path.join(__dirname, 'assets')))
 
@@ -398,3 +402,4 @@ const server = app.listen(process.env.PORT, () => {
   console.log(`Listening at http://localhost:${process.env.PORT}`)
 })
 server.on('error', console.error)
+
