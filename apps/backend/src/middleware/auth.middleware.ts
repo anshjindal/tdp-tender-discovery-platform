@@ -4,42 +4,51 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Define a whitelist of endpoints that do not require authentication.
-const whitelist = [
+const white_list = [
   '/api/v1/auth/signup',
   '/api/v1/auth/login',
-  '/api/v1/auth/forgot-password',
-  '/api/v1/auth/reset-password',
+  '/api/v1/auth/forgotpassword',
+  '/api/v1/auth/resetpassword',
   '/' 
 ];
-
-export function auth(req: Request, res: Response, next: NextFunction): void {
-  // Check if the request URL starts with any whitelisted path.
-  if (whitelist.some(path => req.originalUrl.startsWith(path))) {
+declare module "express" {
+  export interface Request {
+    user?: {
+      email: string;
+      name: string;
+    };
+  }
+}
+export const auth = (req: Request, res: Response, next: NextFunction): Response | void => {
+  // Check if the request URL is in the whitelist
+  if (white_list.some((item) => req.originalUrl === item)) {
     return next();
   }
 
-  // Look for the Authorization header 
+  // Check if authorization header exists and extract the token
   const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).json({ message: 'Access token is missing.' });
-  }
+  const token = authHeader?.split(" ")?.[1];
 
-  const token = authHeader.split(' ')[1];
   if (!token) {
-    return res.status(401).json({ message: 'Token is missing.' });
+    return res.status(401).json({
+      message: "Access token is missing or has expired.",
+    });
   }
 
   try {
-    // Verify the token using the secret defined in the .env file
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-    // Attach user info 
-    req.user = {
-      email: (decoded as any).email,
-      name: (decoded as any).name,
-    };
-    next();
-  } catch (err) {
-    return res.status(401).json({ message: 'Token is expired or invalid.' });
-  }
-}
+    // Verify token using the secret key
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as jwt.JwtPayload;
 
+    // Attach user info to the request object
+    req.user = {
+      email: decoded.email,
+      name: decoded.name,      
+    };
+
+    return next(); // Continue to the next middleware
+  } catch (error) {
+    return res.status(401).json({
+      message: "Invalid or expired token.",
+    });
+  }
+};

@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useAuth } from '../component/AuthContext';
+import { loginAPI } from '../../api';
 
 type LoginFormData = {
   email: string;
@@ -10,20 +13,50 @@ type LoginFormData = {
 
 const Login: React.FC = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>();
+  const { setAuth } = useAuth();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState<boolean>(false); // Track login state
 
   const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
+    setLoading(true); // Start loading
     try {
-      const response = await axios.post('http://localhost:3000/api/v1/auth/login', data);
-      if (response.status === 200) {
-        localStorage.setItem('token', response.data.token);
-        console.log('Login successful', response.data);
-        window.location.href = '/dashboard';
-        
+      const res = await loginAPI(data.email, data.password);
+  
+      if (res.status === 200) {
+        localStorage.setItem('token', res.data.token);
+        localStorage.setItem('user_email', res.data.user.email);
+  
+        setAuth({
+          isAuthenticated: true,
+          user: {
+            email: res.data.user.email,
+            name: res.data.user.name || res.data.user.email, // Fallback to email
+          },
+        });
+  
+        alert("Login Successful!");
+        setTimeout(() => navigate('/'), 1000);
+      } 
+      else if (res.status === 403) {
+        // Handle lockout error
+        alert("Too many failed login attempts. Try again later.");
+      } 
+      else {
+        alert("Login failed. Please check your credentials and try again.");
+        console.error("Login failed", res);
       }
-    } catch (error) {
-      console.error('Login failed', error);
+    } catch (error: any) {
+      if (error.response?.status === 403) {
+        alert("Too many failed login attempts. Try again later.");
+      } else {
+        alert("An error occurred during login.");
+        console.error("Login error", error);
+      }
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
+  
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -54,12 +87,21 @@ const Login: React.FC = () => {
           {errors.password && <p style={{ color: 'red', fontSize: '12px', marginTop: '5px' }}>{errors.password.message}</p>}
         </div>
 
-        {/* Login Button */}
+        {/* Login Button with Loading State */}
         <button
           type="submit"
-          style={{ width: '100%', padding: '10px', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+          disabled={loading} // Disable button while loading
+          style={{
+            width: '100%',
+            padding: '10px',
+            backgroundColor: loading ? '#6c757d' : '#007bff',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: loading ? 'not-allowed' : 'pointer',
+          }}
         >
-          Login
+          {loading ? "Logging in..." : "Login"}
         </button>
 
         {/* Forgot Password Link */}
@@ -79,6 +121,7 @@ const Login: React.FC = () => {
           </p>
         </div>
       </form>
+      <ToastContainer />
     </div>
   );
 };

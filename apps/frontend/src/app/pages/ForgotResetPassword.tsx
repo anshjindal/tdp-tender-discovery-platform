@@ -43,7 +43,7 @@ const ForgotResetPassword: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post('http://localhost:3000/api/v1/auth/forgot-password', { email });
+      await axios.post('http://localhost:3000/api/v1/auth/forgotpassword', { email });
       setMessage('Password reset link has been sent to your email.');
     } catch (error: any) {
       console.error('Forgot Password Error:', error.response?.data || error.message);
@@ -65,7 +65,7 @@ const ForgotResetPassword: React.FC = () => {
     setLoading(true);
     try {
       await axios.post(
-        'http://localhost:3000/api/v1/auth/reset-password',
+        'http://localhost:3000/api/v1/auth/resetpassword',
         { newPassword: password, refreshToken },
         {
           headers: {
@@ -78,7 +78,7 @@ const ForgotResetPassword: React.FC = () => {
       setTimeout(() => navigate('/login'), 3000);
     } catch (error: any) {
       console.error('Reset Password Error:', error.response?.data || error.message);
-      setMessage('Error: Unable to reset password.');
+      alert('Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character.');
     }
     setLoading(false);
   };
