@@ -3,7 +3,6 @@ import TenderData from "./pages/TenderData"
 import LeadGenChat from "./pages/LeadGenChat"
 import LeadGenChatV2 from "./pages/LeadGenChatV2"
 import Rfp from "./pages/Rfp"
-import UploadDoc from "./pages/UploadDoc"
 export function App() {
 
   return (
@@ -21,7 +20,6 @@ export function App() {
         <Route path="/leadgenchat" element={<LeadGenChat />} />
         <Route path="/leadgenchatv2" element={<LeadGenChatV2 />} />
         <Route path="/rfp" element={<Rfp />} />
-	<Route path="/UploadDoc" element={<UploadDoc />} />
       </Routes>
     </>
   )
