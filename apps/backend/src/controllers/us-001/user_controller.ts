@@ -43,12 +43,13 @@ export async function loginHandler(req: Request, res: Response) {
     const { email, password } = req.body;
 
     // Call the service to process the login.
-    const { filteredUser, token } = await loginUser(email, password);
+    const { access_token, refresh_token, filteredUser } = await loginUser(email, password);
 
     return res.json({
       message: 'Login successful',
+      access_token: access_token,
+      refresh_token: refresh_token,
       user: filteredUser,
-      token,
       redirect: '/',
     });
   } catch (err: any) {

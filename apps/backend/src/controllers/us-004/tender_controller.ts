@@ -2,6 +2,9 @@ import { Request, Response } from 'express';
 const tenderServices = require('../../services/tenderServices');
 
 export const searchTendersHandler = async (req: Request, res: Response): Promise<Response> => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.split(' ')?.[1];
+  console.log('Token:', token);
   try {
     // Extract and validate query parameters
     const queryParams = {
@@ -17,7 +20,7 @@ export const searchTendersHandler = async (req: Request, res: Response): Promise
     };
 
     // Pass processed parameters to service
-    const result = await tenderServices.searchTendersService(queryParams);
+    const result = await tenderServices.searchTendersService(token,queryParams);
     
     return res.json(result);
   } catch (error: unknown) {

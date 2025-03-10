@@ -123,13 +123,14 @@ export async function resetPassword(
 const failedLogins: Record<string, { count: number; lockUntil?: number }> = {};
 
 interface LoginResult {
+    access_token: string,
+    refresh_token: string,
     filteredUser: {
       id: string;
       email: string;
       role: string;
       name: string;
     };
-    token: string;
   }
 
   
@@ -174,25 +175,20 @@ export async function loginUser(email: string, password: string): Promise<LoginR
   
     // 4. Clear failed login record upon successful login.
     delete failedLogins[email];
-  
+    
     const user = data.user;
     if (!user) {
       throw new Error('User not found after login.');
     }
-  
-    // 5. Generate a JWT token.
-    const token = jwt.sign({ userId: user.id, email,name:user.user_metadata?.first_name }, JWT_SECRET, { expiresIn: JWT_EXPIRATION });
-  
-    // 6. Filter the user object to return only the required fields.
     const filteredUser = {
-        id: user.id,
-        email: user.email || '', // fallback if email is undefined
-        role: user.role || '',   // fallback if role is undefined
-        name: user.user_metadata?.first_name || '', // fallback to empty string if name is missing
-      };
-      
-  
-    return { filteredUser, token };
+      id: user.id,
+      email: user.email || '', // fallback if email is undefined
+      role: user.role || '',   // fallback if role is undefined
+      name: user.user_metadata?.first_name || '', // fallback to empty string if name is missing
+    };
+    return { access_token: data.session.access_token,
+      refresh_token: data.session.refresh_token, 
+      filteredUser };
   }
 interface ForgotPasswordInput {
   email: string;

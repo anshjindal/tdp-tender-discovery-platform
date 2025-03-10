@@ -76,7 +76,6 @@ app.use(express.json({ limit: '10mb' })) // Limit is 1mb so can parse more tende
 app.use(logger);
 app.use(delay);
 app.use(auth);
-
 // Initialize OpenAI client
 const openai = new OpenAI({
   baseURL: process.env.GEMINI_BASE_URL,

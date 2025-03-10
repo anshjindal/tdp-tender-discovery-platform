@@ -17,7 +17,15 @@ const ForgotResetPassword: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [message, setMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const validatePassword = (password: string) => {
+    const passwordRegex =
+      /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 
+    if (!passwordRegex.test(password)) {
+      return "Password must be at least 8 characters, include one uppercase letter, one number, and one special character.";
+    }
+    return "";
+  };
   // extract tokens from url hash if necessary.
   useEffect(() => {
     if (routeToken) {
@@ -62,6 +70,10 @@ const ForgotResetPassword: React.FC = () => {
       setMessage('Reset tokens are missing. Please use the link in your email.');
       return;
     }
+    if (validatePassword(password)) {
+      setMessage(validatePassword(password));
+      return;
+    }
     setLoading(true);
     try {
       await axios.post(
@@ -78,7 +90,7 @@ const ForgotResetPassword: React.FC = () => {
       setTimeout(() => navigate('/login'), 3000);
     } catch (error: any) {
       console.error('Reset Password Error:', error.response?.data || error.message);
-      alert('Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character.');
+      alert(error.response?.data?.error || 'Error: Unable to reset password.');
     }
     setLoading(false);
   };

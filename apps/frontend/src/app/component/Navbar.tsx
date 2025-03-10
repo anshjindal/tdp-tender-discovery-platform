@@ -17,7 +17,7 @@ const Navbar: React.FC = () => {
       },
     });
     // Optionally remove the token if stored
-    localStorage.removeItem("token");
+    localStorage.removeItem("access_token");
     navigate('/');
   };
 

@@ -19,18 +19,17 @@ const Login: React.FC = () => {
 
   const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
     setLoading(true); // Start loading
+    
     try {
       const res = await loginAPI(data.email, data.password);
-  
       if (res.status === 200) {
-        localStorage.setItem('token', res.data.token);
-        localStorage.setItem('user_email', res.data.user.email);
-  
+        console.log(">>>>>res",res.data.user.name);
+        localStorage.setItem('access_token', res.data.access_token);  
         setAuth({
           isAuthenticated: true,
           user: {
-            email: res.data.user.email,
-            name: res.data.user.name || res.data.user.email, // Fallback to email
+            email: "",
+            name: res.data.user.name||"", 
           },
         });
   

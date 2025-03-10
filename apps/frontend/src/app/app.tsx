@@ -2,8 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import TenderData from "./pages/TenderData";
 import LeadGenChat from "./pages/LeadGenChat";
 import LeadGenChatV2 from "./pages/LeadGenChatV2";
-import Rfp from "./pages/Rfp";
 import Login from './pages/Login';
+import Rfp from "./pages/Rfp";
 import ForgotResetPassword from './pages/ForgotResetPassword';
 import SignUp from "./pages/SignUp";
 import Navbar from './component/Navbar';
@@ -18,7 +18,7 @@ export function App() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("access_token");
 
       if (!token) {
         setAppLoading(false);

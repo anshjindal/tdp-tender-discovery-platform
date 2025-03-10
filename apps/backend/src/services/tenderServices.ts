@@ -1,5 +1,5 @@
-import { supabase } from '../utils/supabaseClient';
-
+// import { supabase } from '../utils/supabaseClient';
+import { createSupabaseClient } from '../utils/createSupabaseClient';
 // Type definitions
 interface SearchQueryParams {
   query?: string | string[];
@@ -12,7 +12,9 @@ interface SearchQueryParams {
   page?: string | string[];
   limit?: string | string[];
 }
-
+interface token{
+  token:string
+}
 interface RawTenderData {
   'title-titre-eng': string;
   'referenceNumber-numeroReference': string;
@@ -49,7 +51,7 @@ interface TenderSearchResult {
   };
 }
 
-export async function searchTendersService(queryParams: SearchQueryParams): Promise<TenderSearchResult> {
+export async function searchTendersService(access_token:token,queryParams: SearchQueryParams): Promise<TenderSearchResult> {
   // Parameter processing with type safety
   const getStringParam = (param: string | string[] | undefined): string | undefined => {
     if (Array.isArray(param)) return param[0];
@@ -68,7 +70,7 @@ export async function searchTendersService(queryParams: SearchQueryParams): Prom
   const page = Math.max(1, Number(getStringParam(queryParams.page)) || 1);
   const limit = Math.max(1, Number(getStringParam(queryParams.limit))) || 10;
   const offset = (page - 1) * limit;
-
+  const supabase = createSupabaseClient(access_token.token);
   let dbQuery = supabase
     .from('open_tender_notices')
     .select('*', { count: 'exact' })
@@ -92,8 +94,11 @@ export async function searchTendersService(queryParams: SearchQueryParams): Prom
       break;
     // Add more sorting options if needed
   }
-
+  console.log(">>>dbQuery",dbQuery);
   const { data, error, count } = await dbQuery;
+  // console.log(">>>data",data);
+  console.log(">>>error",error);
+  console.log(">>>count",count);
 
   if (error) throw new Error(`Database error: ${error.message}`);
 
