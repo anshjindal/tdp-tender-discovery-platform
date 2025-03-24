@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { fetchTendersAPI } from "../../../api/api";
 import "react-toastify/dist/ReactToastify.css";
 import { SubNavMenu } from '../components/SubNavMenu';
-import { PageLayout } from '../../../components/PageLayout/FeaturePageLayout';
+import { PageLayout } from '../../../components/pagelayout/FeaturePageLayout';
 
 // Define interfaces
 interface Tender {
@@ -40,15 +40,15 @@ export const SearchTender: React.FC = () => {
   // State for results
   const [tenders, setTenders] = useState<Tender[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [pagination, setPagination] = useState<Pagination>({
-    total: 0,
-    page: 1,
-    limit: 10,
-    totalPages: 0,
-  });
+  const [error, setError] = useState("");
+  const [selectedTender, setSelectedTender] = useState<Tender | null>(null);
+  const openTenderModal = (tender: Tender) => {
+    closeTenderModal();
+    setSelectedTender(tender);
+  };
+  const closeTenderModal = () => setSelectedTender(null);
 
-  // Fetch tenders from API
+  const [pagination, setPagination] = useState<Pagination>({ total: 0, page: 1, limit: 10, totalPages: 0 });
   const fetchTenders = async () => {
     setLoading(true);
     setError('');
@@ -148,24 +148,24 @@ export const SearchTender: React.FC = () => {
         </select>
 
         <div className="flex flex-col space-y-1">
-          <label className="text-gray-700 text-sm font-semibold">Deadline Start:</label>
-          <input
-            type="date"
-            className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={deadlineFrom}
-            onChange={(e) => setDeadlineFrom(e.target.value)}
-          />
-        </div>
+        <label className="text-gray-700 text-sm font-semibold">Deadline Start Date:</label>
+        <input 
+          type="date" 
+          className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" 
+          value={deadlineFrom} 
+          onChange={(e) => setDeadlineFrom(e.target.value)} 
+        />
+      </div>
 
-        <div className="flex flex-col space-y-1">
-          <label className="text-gray-700 text-sm font-semibold">Deadline End:</label>
-          <input
-            type="date"
-            className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={deadlineTo}
-            onChange={(e) => setDeadlineTo(e.target.value)}
-          />
-        </div>
+      <div className="flex flex-col space-y-1">
+        <label className="text-gray-700 text-sm font-semibold">Deadline End Date:</label>
+        <input 
+          type="date" 
+          className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" 
+          value={deadlineTo} 
+          onChange={(e) => setDeadlineTo(e.target.value)} 
+        />
+      </div>
 
         <input
           type="number"
@@ -194,6 +194,25 @@ export const SearchTender: React.FC = () => {
           <option value="highest_budget">Highest Budget</option>
           <option value="lowest_budget">Lowest Budget</option>
         </select>
+        
+        {/* <select className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" 
+        value={order} 
+        onChange={(e) => setOrder(e.target.value)}
+        >
+          <option value="asc">Ascending</option>
+          <option value="desc">Descending</option>
+        </select> */}
+
+      {/* Apply Filters Button (Left-Aligned) */}
+      <div className="w-full mb-4">
+        <button
+          onClick={fetchTenders}
+          className="px-4 py-2 rounded transition"
+          style={{ backgroundColor: "#373292", color: "#ffffff" }}>
+          Apply Filters
+        </button>
+      </div>
+
       </div>
 
       {/* Results */}
@@ -204,17 +223,17 @@ export const SearchTender: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {tenders.map((tender) => (
-            <div
-              key={tender.referenceNumber}
-              className="border p-4 rounded shadow-sm hover:shadow-md transition-shadow"
-            >
-              <h2 className="text-xl font-bold text-black">{tender.title}</h2>
-              <p className="text-sm text-gray-600 mb-1">
+              <div 
+              key={tender.referenceNumber} 
+              className="border p-4 rounded shadow-sm hover:shadow-md transition-shadow w-full h-[300px] overflow-hidden cursor-pointer relative"
+              onClick={() => openTenderModal(tender)}
+              >
+              <h2 className="text-xl font-bold text-black truncate">{tender.title}</h2>
+            
+              <p className="text-sm text-gray-600 mb-1 truncate">
                 <span className="font-semibold">Reference:</span> {tender.referenceNumber}
               </p>
-              <p className="text-sm text-gray-600 mb-1">
-                <span className="font-semibold">Publication Date:</span> {tender.publicationDate}
-              </p>
+              
               <p className="text-sm text-gray-600 mb-1">
                 <span className="font-semibold">Status:</span>
                 <span
@@ -225,20 +244,28 @@ export const SearchTender: React.FC = () => {
                   {tender.status}
                 </span>
               </p>
-              <p className="text-sm text-gray-600 mb-1">
-                <span className="font-semibold">Closing:</span>{' '}
-                {new Date(tender.closingDate).toLocaleDateString()}
-              </p>
-              <p className="text-sm text-gray-600 mb-1">
+            
+              <p className="text-sm text-gray-600 mb-1 truncate">
                 <span className="font-semibold">Category:</span> {tender.category}
               </p>
-              <p className="text-sm text-gray-600 mb-1">
+            
+              <p className="text-sm text-gray-600 mb-1 truncate">
                 <span className="font-semibold">Regions:</span> {tender.regions}
               </p>
-              <p className="text-gray-700 mt-2 text-sm">
+            
+              {/* Description: only shows preview */}
+              <p className="text-gray-700 mt-2 text-sm line-clamp-3">
                 <span className="font-semibold">Description:</span> {tender.description}
               </p>
+            
+              {/* Overlay button to see more */}
+              <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-white to-transparent p-2 text-center font-bold"
+                style={{ color: "#373292" }}>
+                Click to see more...
+              </div>
+              
             </div>
+          
           ))}
         </div>
 
@@ -263,6 +290,23 @@ export const SearchTender: React.FC = () => {
           </button>
         </div>
       </div>
-      </PageLayout>
+      {selectedTender && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" style={{ zIndex: 1000 }} onClick={closeTenderModal}>
+        <div className="bg-white p-6 rounded-lg w-[500px] max-h-[80vh] overflow-y-auto shadow-lg" onClick={(e) => e.stopPropagation()}>
+          <h2 className="text-xl font-bold">{selectedTender.title}</h2>
+          <p><strong>Reference:</strong> {selectedTender.referenceNumber}</p>
+          <p><strong>Status:</strong> {selectedTender.status}</p>
+          <p><strong>Closing Date:</strong> {selectedTender.closingDate}</p>
+          <p><strong>Category:</strong> {selectedTender.category}</p>
+          <p><strong>Regions:</strong> {selectedTender.regions}</p>
+          <p><strong>Description:</strong> {selectedTender.description}</p>
+          <button onClick={closeTenderModal} className="mt-4 px-4 py-2 bg-red-500 text-white rounded">
+            Close
+          </button>
+        </div>
+      </div>
+    )}
+
+    </PageLayout>
   );
 };

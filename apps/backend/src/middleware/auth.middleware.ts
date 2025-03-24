@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { supabase } from '../utils/supabaseClient';
 
-// Define a whitelist of endpoints that do not require authentication.
 const white_list = [
   '/api/v1/auth/signup',
   '/api/v1/auth/login',
@@ -13,36 +12,27 @@ const white_list = [
   '/api/v1/documents/:id/data',
   '/' 
 ];
-declare module "express" {
+
+declare module 'express' {
   export interface Request {
+    token?: string;
     user?: {
+      userId: string;
       email: string;
       name: string;
     };
   }
 }
-// Extend Request type to include user property
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        name: string;
-        email: string;
-        // Add other user properties you need
-      };
-    }
-  }
-}
 
 export const auth = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
-  // Check if the request URL is in the whitelist
+  // Skip authentication for whitelisted URLs
   if (white_list.some(item => req.originalUrl === item)) {
     return next();
   }
 
-  // Check if authorization header exists and extract the token
+  // Extract the token from the Authorization header
   const authHeader = req.headers.authorization;
-  const token = authHeader?.split(' ')?.[1];
+  const token = authHeader?.split(' ')[1];
 
   if (!token) {
     return res.status(401).json({
@@ -50,19 +40,22 @@ export const auth = async (req: Request, res: Response, next: NextFunction): Pro
     });
   }
 
-  try {
-    // Verify token using Supabase
-    const { data: { user }, error } = await supabase.auth.getUser(token);
+  // Attach the token to req.token
+  req.token = token;
 
-    if (error || !user) {
+  try {
+    // Retrieve user info from Supabase using the token
+    const { data, error } = await supabase.auth.getUser(token);
+
+    if (error || !data.user) {
       throw new Error(error?.message || 'Invalid user');
     }
 
-    // Attach user info to the request object
+    // Attach the user information to req.user
     req.user = {
-      name: user.user_metadata?.first_name || '',
-      email: user.email ?? '',
-      // Add other user properties from Supabase response
+      userId: data.user.id,
+      email: data.user.email || '',
+      name: data.user.user_metadata?.first_name || '',
     };
 
     return next();

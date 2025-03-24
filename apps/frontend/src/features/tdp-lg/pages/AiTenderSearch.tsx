@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { filterOpenTenderNotices, getOpenTenderNoticesToDB } from '../../../api/api'
 import { SubNavMenu } from '../components/SubNavMenu';
 import { FilteredTenderData } from '../components/FilteredTenderData';
-import { PageLayout } from '../../../components/PageLayout/FeaturePageLayout';
+import { PageLayout } from '../../../components/pagelayout/FeaturePageLayout'
+
 
 export const AiSearchTender: React.FC = () => {
   const [formData, setFormData] = useState({ prompt: '' });

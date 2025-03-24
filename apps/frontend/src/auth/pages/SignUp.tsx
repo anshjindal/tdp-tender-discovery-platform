@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { User, Mail, Lock } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import logo from "../../assets/wouessi-new-logo.png"   
+
 
 const SignUp: React.FC = () => {
   const navigate = useNavigate(); 
@@ -154,7 +156,7 @@ const SignUp: React.FC = () => {
         {/* Logo */}
         <div className="flex justify-center mb-4">
           <img
-            src="/logo.png" // Originally used Wouessi logo locally for testing
+            src={logo} // Originally used Wouessi logo locally for testing
             alt="Wouessi Logo"
             className="w-32 h-auto object-contain"
           />

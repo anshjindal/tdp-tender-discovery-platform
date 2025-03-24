@@ -1,7 +1,12 @@
+// src/app.tsx
+import { useEffect, useState } from "react";
 import AppRoutes from "./routes/AppRoutes";
 import { useAuth } from "./auth/components/AuthContext";
-import {getaccountAPI} from './api/api';
-import { useEffect, useState } from "react";
+import { getaccountAPI } from "./api/api";
+
+// ADD:
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const { auth, setAuth } = useAuth();
@@ -34,9 +39,15 @@ function App() {
     };
 
     fetchUser();
-  }, [setAuth]); // Ensure this runs when `setAuth` changes
+  }, [setAuth]);
 
-  return <AppRoutes />;
+  return (
+    <>
+      <AppRoutes />
+      {/* Add ToastContainer so toast notifications can appear */}
+      <ToastContainer />
+    </>
+  );
 }
 
 export default App;

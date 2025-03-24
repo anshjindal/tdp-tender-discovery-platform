@@ -1,14 +1,17 @@
-import * as path from 'path'
-import express from 'express'
-import OpenAI from 'openai'
-import cors from 'cors'
-import axios from 'axios'
-import Papa from 'papaparse'
-import { createClient } from '@supabase/supabase-js'
-//import { authRouter } from './routes/auth.routes'
+// apps/backend/src/main.ts
+import * as path from 'path';
+import express from 'express';
+import OpenAI from 'openai';
+import cors from 'cors';
+import axios from 'axios';
+import Papa from 'papaparse';
+import { createClient } from '@supabase/supabase-js';
+import { createServer } from 'http';
+import { Server as SocketIOServer } from 'socket.io';
 import authRouter from './routes/authRoutes';
-import tenderRouter from './routes/tenderRoutes'
-import { logger } from './middleware/logger.middleware'
+import tenderRouter from './routes/tenderRoutes';
+import bidRouter from './routes/bid.routes';
+import { logger } from './middleware/logger.middleware';
 import { delay } from './middleware/delay.middleware';
 import { auth } from './middleware/auth.middleware';
 
@@ -19,6 +22,10 @@ import './services/nlpWatcher';
 
 //console.log('Logger:', logger);
 //console.log('Auth Router:', authRouter);
+import dotenv from 'dotenv';
+import {initSupaBaseSubscription} from './utils/supabase_subscription';
+import { createSupabaseClient } from './utils/createSupabaseClient';
+dotenv.config();
 
 // Initialize Supabase client
 const supabase = createClient(
@@ -134,7 +141,8 @@ app.post('/getRfpAnalysis', async (req, res) => {
       ],
     })
 
-    const response = completion.choices[0].message.content
+    const response = completion.choices[0].message.content;
+
     const { error } = await supabase
       .from('rfp_analysis')
       .insert({ data: response })
@@ -142,9 +150,12 @@ app.post('/getRfpAnalysis', async (req, res) => {
     if (error) {
       console.error('Error storing RFP analysis:', error)
       return res.status(500).json({ error })
+      // return res.status(500).json({ error: 'Failed to store RFP analysis' });
     }
 
-    res.json(response || '{}')
+    res.json(response || '{}');
+    // return res.json({ analysis: response });
+
   } catch (error) {
     console.error('Error analyzing RFP:', error)
     res.status(500).json({ error: 'Failed to analyze RFP' })
@@ -250,15 +261,22 @@ app.post('/filterOpenTenderNotices', async (req, res) => {
     if (error) {
       throw new Error(`Failed to fetch tender notices: ${error.message}`)
     }
-
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.split(' ')?.[1];
+    // const token = req.token;
     // Filter tenders using AI
     const response = await axios.post(
       'http://localhost:3000/filterTendersWithAI',
       {
         prompt: req.body.prompt,
         data: data,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       }
-    )
+    );
 
     const filteredIDs = response.data.matches
 
@@ -408,25 +426,39 @@ app.get('/getOpenTenderNoticesFromDB', async (req, res) => {
   }
 })
 
-app.use('/api/v1/auth', authRouter)
-app.use('/api/v1/tenders', tenderRouter)
+app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/tenders', tenderRouter);
+app.use('/api/v1/bids', bidRouter); // From dev branch
 
 // Serve static files from the 'assets' folder
-app.use('/assets', express.static(path.join(__dirname, 'assets')))
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
+// Register the upload route (assuming uploadRouter and router are different)
+app.use('/api/v1/documents', uploadRouter); // Keep only one, clarify intent later
 
-// Register the upload route
-app.use('/api/v1/documents', uploadRouter);
+// Create an HTTP server and attach Socket.IO to it (from dev)
+const httpServer = createServer(app);
+const io = new SocketIOServer(httpServer, {
+  cors: { origin: '*' },
+});
 
-app.use('/api/v1/documents', router);
+io.on('connection', (socket) => {
+  const token = socket.handshake.query.token;
+  console.log('A client connected with token:', token);
+  if (token) {
+    initSupaBaseSubscription(token, io); // Initialize Supabase subscription
+  }
+});
 
-// Register the error handler last
+app.set('io', io); // Make io accessible in controllers
+
+// Register the error handler last (from HEAD)
 app.use(errorHandler);
 
+// Start the HTTP server
+const PORT = process.env.PORT || 3000;
+httpServer.listen(PORT, () => {
+  console.log(`Listening at http://localhost:${PORT}`);
+});
 
-
-const server = app.listen(process.env.PORT, () => {
-  console.log(`Listening at http://localhost:${process.env.PORT}`)
-})
-server.on('error', console.error)
-
+export { io, httpServer, app }; // Export from dev branch
