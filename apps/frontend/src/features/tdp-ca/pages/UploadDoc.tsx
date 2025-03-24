@@ -104,7 +104,7 @@ const UploadDoc: React.FC = () => {
           {msg}
         </span>
       )}
-           
+   {nlpResults && (        
   <div style={{ marginTop: '20px', width: '100%', display: 'flex', justifyContent: 'start' }}>
   <div style={{ textAlign: 'left', width: '100%' }}>
     <h2>NLP Results</h2>
@@ -122,6 +122,7 @@ const UploadDoc: React.FC = () => {
     </p>
   </div>
 </div>
+)}
     </div>
     
   )
