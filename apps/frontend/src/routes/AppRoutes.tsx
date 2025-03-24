@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "../components/layouts/Layout";
 import TenderData from "../features/tender-data/TenderData";
-import LgMain from "../features/tdp-lg/lg-main";
 import CaMain from "../features/tdp-ca/ca-main";
 import BmMain from "../features/tdp-bm/bm-main";
 import {AiSearchTender} from "../features/tdp-lg/pages/AiTenderSearch";

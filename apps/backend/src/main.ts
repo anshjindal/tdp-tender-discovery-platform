@@ -445,8 +445,8 @@ const io = new SocketIOServer(httpServer, {
 io.on('connection', (socket) => {
   const token = socket.handshake.query.token;
   console.log('A client connected with token:', token);
-  if (token) {
-    initSupaBaseSubscription(token, io); // Initialize Supabase subscription
+  if (typeof token === 'string') {
+    initSupaBaseSubscription({ token }, io); // Initialize Supabase subscription
   }
 });
 
