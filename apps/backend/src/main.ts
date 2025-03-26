@@ -14,10 +14,19 @@ import bidRouter from './routes/bid.routes';
 import { logger } from './middleware/logger.middleware';
 import { delay } from './middleware/delay.middleware';
 import { auth } from './middleware/auth.middleware';
+
 import dotenv from 'dotenv';
 import {initSupaBaseSubscription} from './utils/supabase_subscription';
 import { createSupabaseClient } from './utils/createSupabaseClient';
 dotenv.config();
+
+import uploadRouter from './routes/uploadRoutes';
+import errorHandler from './middleware/errorHandler';
+import router from './routes/nlpRoutes';
+import './services/nlpWatcher';
+
+//console.log('Logger:', logger);
+//console.log('Auth Router:', authRouter);
 
 // Initialize Supabase client
 const supabase = createClient(
@@ -104,7 +113,7 @@ app.get('/', (req, res) => {
 app.post('/generateLeads', async (req, res) => {
   try {
     const completion = await openai.chat.completions.create({
-      model: process.env.GEMINI_AI_MODEL_ID || '',
+      model: process.env.AI_MODEL_ID || '',
       messages: [
         { role: 'developer', content: 'You are a helpful assistant.' },
         { role: 'user', content: req.body.prompt },
@@ -169,7 +178,7 @@ app.post('/filterTendersWithAI', async (req, res) => {
       messages: [
         {
           role: 'assistant',
-          content: `You are an AI that helps users filter a database of government tenders. 
+          content: `You are an AI that helps users filter a database of government tenders.
 You MUST return a valid JSON response matching this exact format:
 {
   "matches": ["REF1", "REF2"]
@@ -249,8 +258,6 @@ app.post('/filterOpenTenderNotices', async (req, res) => {
       .select(
         'referenceNumber-numeroReference, tenderDescription-descriptionAppelOffres-eng'
       )
-      .limit(200);
-  
 
     if (error) {
       throw new Error(`Failed to fetch tender notices: ${error.message}`)
@@ -272,15 +279,13 @@ app.post('/filterOpenTenderNotices', async (req, res) => {
       }
     );
 
-    const filteredIDs = JSON.parse(response.data).matches
-
+    const filteredIDs = response.data.matches
 
     // Get full data for matched tenders
     const { data: matchedData, error: matchError } = await supabase
       .from('open_tender_notices')
       .select('*')
       .in('referenceNumber-numeroReference', filteredIDs)
-    
 
     if (matchError) {
       throw new Error(`Failed to fetch matched data: ${matchError.message}`)
@@ -464,4 +469,3 @@ httpServer.listen(PORT, () => {
 
 
 export { io, httpServer, app };
-

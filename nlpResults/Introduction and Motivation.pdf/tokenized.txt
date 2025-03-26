@@ -1,0 +1,639 @@
+• Introduction and Motivation.
+Reasoning about action and event is one of the most 
+mature research areas in Artificial Intelligence (AI): it is almost as old as AI itself.
+This research area has a direct connection to one of the central AI topics - namely, 
+how to solve a problem using general domain independent techniques for finding a 
+sequence of transformations or constructors/destructors that create a desired 
+partially specified goal from a given initial state of affairs.
+This research area has 
+strong foundations in mathematical logic.
+It is influenced and inspired by modern 
+research in logic, natural language understanding, high-level robot control, 
+database transactions, and several areas in computer science.
+The growth in this 
+area was to a significant degree stimulated by research done in Toronto (Canada), 
+and in a few other universities world-wide.
+This area consists of several sub-areas, 
+where researchers are seeking different ways to overcome computational 
+difficulties associated with reasoning about effects of actions (events) in large, 
+incompletely known application domains that may include unspecified and 
+unnamed objects.
+The areas of application are lifted planning in an open world with 
+unknown objects, urban planning (including automated planning for transportation 
+and parking), control of hybrid (mixed dsicrete-continuous) systems and embedded 
+systems (also known as cyber-physical systems), problem solving, discovery in 
+natural sciences, computing causes of failures from given traces (logs of events), 
+integration of task and motion planning for robotics, verification of business 
+processes, reasoning about streams of database transactions.
+This course starts with basic introduction to mathematical logic: prepositional logic and 
+first order logic.
+The students are expected to learn a professional logical jargon and 
+concepts that will help them to work on a higher level of abstraction.
+This logical language 
+serves to provide a formal specification that facilitates a correct implementation in one of 
+the programming languages.
+Moreover, using logical specification, it becomes possible to 
+formulate interesting, general and realistic AI research problems that cannot be 
+approached in other terms.
+After that, we review the most important results in this 
+research area, and then focus on modern developments.
+We will discuss the compromises 
+involved in providing useful logical representations that allow reasoning about actions to 
+remain computationally tractable.
+There are some limits imposed by computational 
+tractability; we will mention what we can do when trying to develop efficient AI 
+implementations.
+The assignments will usually include problem solving exercises.
+One of the assignments on 
+planning may include also developing and running a benchmark problem using the state-
+of-the-art planners, using a provided deductive planner, and doing experimental 
+
+comparison of different planner configurations on several planning instances of the 
+benchmark.
+Topics may include: an algorithm for correct reasoning in propositional logic and in first 
+order logic, the situation calculus, the projection problem (whether a given state can be 
+reached after executing a given sequence of actions when initial states are not known 
+completely), regression (reasoning backwards), progression (reasoning forward), the frame, 
+and ramification problems, the precondition and successor state axioms, planning, 
+execution monitoring, reasoning about effects of continuous and concurrent processes 
+extended in time, identifying an actual cause of an observed effect from logs of events that 
+happen during the run of a system.
+It was long time recognized that actions have not only direct, but also indirect effects, and 
+in many cases, have no effect on most of the features characterizing application domains.
+For example, pressing an electric switch button has a direct effect on the button - it 
+becomes pressed - but also has an indirect effect, e.
+g.
+, lights turn on.
+It turns out that 
+chains of mutual dependencies leading to indirect effects may be quite complicated.
+We 
+may consider representations developed to specify non-effects succinctly and to reason 
+about indirect effects correctly.
+For the latter purpose, representations based on causality 
+turned out to be most successful.
+We may explore some of the recent results about using 
+causality to compile implicit indirect effects into explicit effects.
+This course provides necessary and sufficient background for the students who would like 
+to be involved in modern research on reasoning about actions in artificial intelligence.
+• Prerequisites For undergraduate students: An undergraduate level course in AI 
+(e.
+g.
+, CPS721 at TMU).
+Since no previous knowledge of mathematical logic is expected, this course starts 
+with a brief introduction into propositional logic, and first order logic.
+In addition, a 
+popular reasoning algorithm based on linear resolution is also introduced and 
+illustrated on several examples.
+It is assumed that the students have the basic skills of programming in PROLOG, or 
+they are willing to learn the basics of PROLOG by themselves.
+One of the homework 
+assignments (on automated planning) will require understanding of a large PROLOG 
+program and writing a short program in PROLOG.
+Several handouts include 
+programs written in PROLOG.
+• Delivery Mode: Lectures: 3 hours.
+Assigned readings.
+Out-of-class discussions in a 
+lab.
+The course is delivered in-person including 3 (2+1) hours of synchronous lectures 
+per week (for 12 weeks) and 1h of synchronous lab/tutorial per week (for 10 
+
+weeks).
+Students are not allowed to record the lectures.
+Some of the lectures may include problem solving sessions, where the instructor 
+will solve problems similar to homework assignments and similar to exams.
+All the 
+presentation slides, except of problem solving sessions, will be posted on D2L to 
+faciliate asynchronous learning.
+The labs may include tutorials and solving typical 
+problems similar to exams and homework assignments.
+• Calendar Description: The course will focus on the theory and implementation of 
+dynamical systems considered from the perspective of artificial intelligence.
+Modern logical representations of actions and their effects will be discussed in 
+detail.
+The emphasis will be on the compromises required to ensure computational 
+tractability of reasoning about effects of actions.
+The course will show how these 
+research issues are relevant to artificial intelligence and to applications beyond the 
+traditional area of artificial intelligence.
+Topics may include: logical foundations, 
+algorithms for correct reasoning, automated heuristic lifted planning, causality, 
+time, planning for mixed discrete-continuous systems, and reasoning about direct 
+and indirect effects of actions.
+• References:  
+There is no mandatory textbook.
+Handouts with slides will be posted on D2L after 
+every class.
+In addiiton to attending classes and reading the handouts the students 
+can read a few recommended books available from the TMU Library Reserve or as e-
+books.
+The following textbooks are recommended (some of the readings are optional 
+and/or supplementary to your lecture notes).
+o The book How to prove it : a structured approach by Daniel J.
+Velleman 
+provides foundations and a very readable introduction to a few basic topics.
+It can also serve well as a reference.
+Published by Cambridge University 
+Press in 2006, 2nd edition, ISBN 978-0521675995 (paper-back).
+Alternatively, 
+consider Edward A.
+Bender, S.
+Gill Williamson ``Short Course in Discrete 
+Mathematics", Dover, 2005.
+See sections on Functions and Order posted 
+online in PDF.
+Alternatively, recall differences 
+between function and relation from a short and readable overview of ``The 
+Language and Grammar of Mathematics", published as Section I.
+2 (Part 1 
+"Introduction"): pages 8-16, in Timothy Gowers (Editor) The Princeton 
+Companion to Mathematics, Princeton University Press, 2008.
+o Uwe Schoning `` Logic for Computer Scientists", published by Birkhauser, 
+Boston, 2008 (Available online: see the TMU Library.)
+o Mordechai Ben-Ari ``Mathematical Logic For Computer Science'', corrected 
+6th printing of the 2nd edition, Springer 2003, or a more recent edition of this 
+book.
+The recommended 3rd edition of his book was published in 2012.
+[This 
+is a textbook for a TMU course MTH714.
+o Stephen Cook:   Slides for the course CSC 438S/2404S: Computability and 
+Logic.
+The following slides can be relevant: Propositional Calculus, read 
+pages 2-6 only, and Predicate Calculus, read the pages 18-26 only.
+o Elliot Mendelson ``Introduction to mathematical logic", any recent edition is 
+fine.
+o Joseph R.
+Shoenfield ``Mathematical Logic" (paperback).
+Publisher: A K 
+Peters/CRC Press, 2001.
+[Chapters 2 and 3].
+o Anil Nerode and Richard A.
+Shore ``Logic for applications", published by 
+Springer, 2nd edition, 1997.
+ISBN: 978-0387948935.
+Available in 
+the university library.
+o Raymond Reiter `` Knowledge in Action: Logical Foundations for Specifying 
+and Implementing Dynamical Systems".
+MIT Press, 2001.
+[ Available online 
+from the TMU library: Chapters 3, 4, 5, 7, 9, 10.]
+o Hector Geffner and Blai Bonet: A Concise Introduction to Models and 
+Methods for Automated Planning: Read Chapter 2.
+This book is 
+available online from the TMU Library.
+This book was published in June 2013, 
+by Morgan and Claypool publishers, in the series Synthesis Lectures on 
+Artificial Intelligence and Machine Learning 
+(doi:10.2200/S00513ED1V01Y201306AIM022).
+o S.
+Russell and P.
+Norvig "Artificial Intelligence", published by Pearson.
+The 
+following chapters are relevant: Planning (Chapter 11) from the 2nd edition, 
+2003, p.
+375-416, ISBN 0137903952 and Solving Problems by Searching 
+(Chapter 3), from the 4th edition, p.
+59-93, or from 3rd edition, pages 65-113.
+This textbook is available from the university library.
+o Frank van Harmelen, Vladimir Lifschitz, Bruce Porter (Editors) " Handbook of 
+Knowledge Representation", published by ELSEVIER, 2007, 1034 Pages, 
+ISBN: 978-0-444-52211-5.
+[Chapters 3, 16, 23.]
+Available in the university 
+library.
+o Optional/required readings may also include a selection of research papers 
+published in journals or in the proceedings of international conferences.
+• Student Evaluation See the table below with a brief description and a tentative 
+calendar for all course work.
+To pass the course the following is required: 
+o At least 50% must be achieved on the theoretical component (the weighted 
+total of the quiz, test, and exam marks) 
+o At least a 50% grade on the weighted total lab mark 
+o At least a 50% grade on the remaining practical component (the weighted 
+total of the assignment and project marks 
+In addition, any student who missed half or more than half of the lectures fails the course 
+for non-attendance.
+Class attendance is mandatory.
+• Lecture Topics (tentative list): 
+1.
+Introduction to propositional logic.
+Syntax: well-formed formulas, sub-formulas of a 
+formula, defined connectives.
+Semantics: truth assignment, satisfiability, tautology, logical 
+consequence, well-known propositional equivalences.
+DNF (disjunctive normal form), CNF 
+(conjunctive normal form), NNF (negation normal form).
+The satisfiability problem for a 
+formula in propositional logic.
+The entailment problem.
+Reasoning in propositional logic 
+using resolution and its refinements: set-of-support strategy, linear resolution, SLD-
+resolution.
+Horn formulas.
+Soundness and completeness of a resolution algorithm for 
+solving the satisfiability problem.
+2.
+Introduction to first order logic (FOL).
+Syntax: predicate symbols, function symbols, 
+terms, quantifiers, free and bound variables.
+Semantics: interpretation (structure), object 
+assignments, model, basic semantic definition (BSD), satisfiability, logical consequence, 
+validity, examples of FOL equivalences.
+3.
+How to prove logical consequence and logical equivalence using BSD: examples.
+Substitution in terms and in formulas, a term freely substitutable for a variable in a formula, 
+substitution theorem.
+Prenex normal form (PNF).
+Skolemization.
+Substitution, unification of terms (the unification 
+algorithm is optional), examples.
+Herbrand's Theorem.
+Horn formulas.
+Reasoning in FOL 
+using resolution and unification.
+Examples of refutations using resolution.
+Godel's 
+soundness and completeness theorem for FOL.
+4.
+Examples of counter-models for some satisfiable FOL formulas that are not valid.
+The satisfiability and entailment problems in FOL are undecidable (Church-Turing 
+theorem).
+Compactness of FOL.
+A theory of single successor, its axiomatization, and 
+models, including non-standard models.
+Optional: finitely axiomatizable theories, 
+incomplete and complete theories, e.
+g.
+, linear dense order.
+Limitations of FOL: transitive closure cannot be correctly formulated in FOL.
+Second order 
+logic: a brief overview of syntax and semantics.
+DATALOG.
+5.
+Introduction to reasoning about action.
+Intuitive ontology for the situation calculus.
+The qualification problem: the precondition axioms as a tentative solution in FOL.
+Deterministic, primitive, atemporal actions without side-effects.
+Frame axioms (axioms 
+about lack of effects for actions), the frame problem: Reiter's solution.
+Effect axioms, 
+normal form for effect axioms.
+Transforming effect axioms for a given fluent into a single 
+positive effect axiom and a single negative effect axiom for the fluent.
+Explanation closure, 
+causal completeness assumption, successor state axioms.
+6.
+Foundational axioms for the situation calculus, the tree of situations.
+Principles of 
+induction.
+Uniform formulas, regressable formulas.
+Basic action theories (BATs): 
+precondition axioms, successor state axioms, initial theory, foundational axioms, unique 
+name axioms (UNA).
+The projection and executability problems.
+Two techniques for solving 
+these problems: regression (reasoning backwards) and progression (reasoning forward).
+The regression operator.
+The relative satisfiability theorem.
+The theorem about reducing the 
+projection problem to entailment of a regressed formula from an initial theory (together 
+with UNA).
+7.
+Data base update transactions formalized in the situation calculus.
+STRIPS 
+assumption vs ADL theories vs arbitrary basic action theories.
+Implementing basic action 
+theories in Prolog: closed world assumption (CWA), open world assumption (OWA).
+Domain Closure Assumption (DCA) vs open domains with possibly unspecified objects.
+8.
+The planning problem formulated as an entailment problem in the situation 
+calculus.
+Advantages of this formulation.
+Optimal planning: A* algorithm.
+Priority Queue 
+data structure.
+Domain independent heuristics: MAX, ADD.
+Planning graph based 
+heuristics: FF.
+State of the art planners: Fast Downward, Best-First Width Search.
+Deductive planning based on situations and fluents.
+9.
+Actual causes in situation calculus.
+Motivation: token causality vs generic causality.
+Well-known examples of finding causes from a given scenario.
+Pearl and Halpern's 
+structural causal models approach.
+Using basic action theory to represent domain 
+dynamics.
+One-step regression for a formula representing an observed effect.
+Achievability 
+cause, and the chain of achievability causes.
+Maintenance causes serve to mitigate risks 
+associated with potential threats to an achieved effect.
+In a general case, actual causes 
+recursively combine achievability and maintenance causes.
+Applications of causal 
+analysis to computing the actual cause of a failure from a log of actions/events.
+10.
+Reasoning forward in the situation calculus.
+Forgetting about a single ground atom 
+and about multiple ground atoms.
+Progression in the situation calculus.
+Local-effect basic 
+action theories.
+Computing progression efficiently.
+11.
+Advanced topics in reasoning about action: time and continuous processes.
+Instantaneous actions, processes extended in time.
+Natural actions: representing physical 
+laws, least natural time point.
+Planning in mixed discrete-continuous (hybrid) systems.
+Correct reasoning about hybrid systems.
+Diagnosis of failures in hybrid systems.
+Approaches to axiomatizing concurrency.
+12.
+(Optional topic, if time permits) Reasoning about indirect effects of actions.
+Circumscription: general definition, circumscription with fixed and variable predicates, 
+examples when circumscription can be expressed in FOL.
+State constraints, the 
+ramification and qualification problems, the causality predicate, causal rules, compiling 
+state constraints into successor state axioms.
+13.
+(Optional topic, if time permits) Advanced topics in reasoning about action: 
+stochastic actions.
+Markov Decision Processes (MDPs), decision theoretic (DT) planning.
+Decision-tree based methods to solving the DT-planning problem with a finite horizon.
+DT-
+Golog: problem representation, semantics, computing a policy and its value, sensing 
+actions, on-line interpreter.
+Applications to robot programming and to requirements 
+engineering.
+14.
+(Optional topic, if time permits) Taxonomies of actions: troponyms (the possible 
+relations between verbs in the semantic network of the WordNet database).
+Computational advantages of taxonomies of actions.
+Successor state axioms using 
+taxonomies of actions.
+Course Policies 
+• Grading requirements for undergraduate students: To pass the course the students 
+have to get 
+o At least 50% must be achieved on the theoretical component (the weighted 
+total of the quiz, test, and exam marks) 
+o At least a 50% grade on the weighted total lab mark 
+o At least a 50% grade on the remaining practical component (the weighted 
+total of the assignment and project marks 
+See the table below with a brief description and a tentative calendar for all course work.
+• For graduate students all course work mentioned in the table below is scaled down 
+to 80%.
+Graduate students may be asked to do additional work on assignments and 
+tests.
+The graduate students have to complete a small project that is worth of 20% 
+of the final score.
+In addition, the graduate students may be asked to prepare slides 
+for a 20-30min talk on a topic related to the course, and present their talk in class.
+• The students are strongly encouraged to take notes in class, and study their notes 
+after class.
+Learning can be a gradual process that requires time and efforts.
+The 
+students benefit from attending lectures since some important details will be 
+discussed only there.
+For this reason, attending lectures and (and extra 
+tutorials/labs) is mandatory.
+• All course materials posted on D2L and presented in class are copyrighted and 
+protected by law.
+You cannot share them with anyone.
+You cannot repost them 
+anywhere on the Web.
+Please review the TMU policy about copyrights.
+Moreover, 
+you cannot share or repost any of your solutions to the labs or to assignments, since 
+doing this would violate the cps822 policy on collaboration, and the TMU Academic 
+Policy 60.
+You can read online parts of this policy related to "Academic misconduct".
+• Examinations: The quizzes, a midterm exam, and the final exam may include 
+problem solving, and short essay questions.
+The duration of these examinations 
+may be around 15-20 min, 1h40min, and 2h30min, respectively.
+Extra quizzes (or 
+polls) can be given at any time in class or during the labs without prior warning.
+The 
+midterm and final exam may include questions similar to homework assignments 
+and lab exrcises.
+The final exam can be cumulative and may include all the material 
+covered throughout the term with focus ont he topics discussed after the midterm 
+exam.
+There will be no supplemental examination.
+Grades are earned for the 
+demonstration of knowledge.
+• If you miss a midterm test, or a final exam for medical reasons, you have to submit 
+an academic consideration request through the Online Submission 
+Form   and   submit a copy of a completed official Health Certificate to the 
+designated contact person or to the department of Computer Science within 3 
+working days.
+Once the submitted student’s health documentation has been 
+verified, the instructor will be notified of the verification.
+Similarly, all 
+documentation related to special accomodation or academic consideration should 
+be submitted online to the designated contact person within the specified time 
+limits.
+• Dates are subject to change, all changes will be announced in class and on the 
+course Web pages.
+• Assignments should be submitted on or before the deadline specified in the 
+assignment (you are encouraged to submit assignments earlier).
+Your assignment is 
+considered late if any part of the assignment is late (even if it is just 1 minute late) 
+and the penalty for a late assignment is 10% off.
+No assignments will be accepted if 
+more than one day late.
+Start solving your assignment on the same day when it is 
+posted.
+Do not procrastinate.
+No make-up assignments.
+• Tutorials/Labs are mandatory.
+Usually, each tutorial includes a mini-lecture and 
+may include as well a poll/quiz.
+Each student must answer quiz questions 
+individually.
+In addition, the TA who is teaching a lab can provide additional practice 
+questions/quizzes.
+The students who actively participate in labs and volunteer 
+during the lab to answer the questions of their T.
+A.
+may become eligible for extra 4% 
+participation marks.
+Lab Marks: are given for attendance and answering correctly 
+questions, as specified by T.
+A.
+The lab mark will be given only if 
+1.
+the student attends the entire lab in the section where s/he is enrolled, 
+2.
+the T.
+A.
+observed the student actively participating in discussion, solving questions, 
+and 
+3.
+the student signed up the solutions as required, provided a family name and a 
+student number.
+4.
+There will be no make-up labs.
+No video recordings of lab, or notes from the labs will 
+be posted.
+The student who missed a lab should try to solve independently the exercises 
+given during the lab time and verify the solutions with the T.
+A.
+, or with peers in class.
+• From time to time, I will hand out exercises.
+The students are expected to solve the 
+exercises, but they will not be graded.
+However, working on exercises will improve 
+your understanding of this course and will help you to get better marks on tests.
+• Up to 4% extra credit may be assigned for active class participation, e.
+g.
+, a 
+student attends the entire class, participates actively by asking/answering 
+questions, works on problems in class and/or attends office hours.
+Class 
+participation marks are given at discretion of the course instructor.
+They cannot be 
+requested by the students.
+• Handouts and assignments will be made available on the Web only.
+You are 
+responsible for visiting the course Web pages regularly and reading assignments 
+related information that is provided or linked from these Web pages.
+Before sending 
+
+your questions by e-mail to the instructor, check these Web pages whether similar 
+questions have been already answered.
+• Email communication: please send your email from local TMU's email addresses 
+only.
+Email sent from Bell, Rogers, Google and other popular providers can be 
+filtered out as spam and might not reach the instructors.
+Email messages will be 
+normally answered within 24 hours.
+However, messages sent on weekend (starting 
+from Friday late afternoon) will be usually answered on Monday.
+• Grades for labs, tests and assignments will be normally posted 
+on my.
+torontomu.
+ca Web site no later than two weeks after the due date (exam 
+date).
+Marking guides, the assignments and some other course related documents 
+will be posted on my.
+torontomu.
+ca only.
+Feedback will be usually provided to 
+students within two weeks.
+The students can contact the TA who was responsible 
+for marking, if they have questions about marking, or attend the office hour.
+Missing 
+marks for labs cannot be requested since only those students who attended a lab 
+and actively participated are eligible to get a mark (see the policy for labs above).
+Policy on collaboration in homework assignments 
+Discussing general approaches to problems is allowed.
+However, home work assignments 
+are individual, unless group work is allowed in the assessment.
+No collaboration is 
+allowed between groups when you write final solutions.
+You may discuss assessments only 
+with one another student currently taking the course.
+However, you should never put your 
+name on anything you do not understand.
+If challenged, you must be able to reproduce 
+and explain all solutions by yourself, or solve similar exercises.
+If you cannot explain a 
+solution that you handed in, or if you cannot solve an exercise similar to an assessment 
+that you submitted, this will negatively affect your grade.
+In particular, you might be asked 
+to solve exercises during the office hours, or in class (as a quiz).
+These unscheduled tests 
+or evaluations can be given at any time without prior notice.
+Remember that if you work 
+with a partner, you are still expected to know solutions of all exercises from the home work.
+Grades are earned for the demonstration of knowledge.
+In cases when a student fails to 
+demonstrate knowledge about a home work, the grade for the home work can be 
+decreased to 0.
+The first page of your homework should include: the name of all students 
+with whom you discussed any homework problems (even briefly).
+Otherwise, it is assumed 
+that you didn't discuss with anyone except the instructor.
+Copied work (both original and 
+copies) will be graded as 0.
+An additional penalty for copied work may be assigned up to -
+2% of the final course grade, i.
+e.
+, cheating students can get a negative grade on an 
+assignment.
+Additional penalty for a copied (in part or in whole) solution to a quiz can be up 
+to -1% of the final course score.
+This is in accordance with the new TMU Senate Policy 60 
+
+on Academic Integrity.
+Repeated involvement with plagiarism will be penalized in 
+accordance with the departmental policy and the Student Code of Academic Conduct.
+Contract Cheating Statement 
+In regard to any and all assessments in this course, the use of Chegg or any other similar 
+help site/service will be pursued as "contract cheating".
+The use of ChatGPT, Gemini, Copilot and similar generative large language models (LLM) 
+with the purposes of solving homework problems will be pursued as "a breach of Policy 60: 
+Academic Integrity", if the student accessed them before submitting course work and 
+assessment is presented as if it is one’s own original work without appropriate referencing.
+Generative LLM tools may only be used for comparison with your own course work that you 
+have already submitted, but not for the creation of submitted work.
+You might be allowed to use generative LLM tools to complete your end of the term Project.
+All content automatically generated by LLM tool(s) should be properly cited and referenced 
+in your project report using different fonts and/or colours to make sure your own writing is 
+visibly distinct from any automatically generated content.
+An additional policy on how to 
+complete your Project will be posted at D2L.
+Falsified citations or misrepresentation of source material will be considered a breach of 
+Policy 60.
+You are responsible for the accuracy of the work you submit.
+In regard to any and all assessments in this course, the use of any third party (e.
+g.
+, family 
+member, freelancer, room-mate, friend, tutor) to complete work on your behalf will be 
+pursued as "contract cheating" under Policy 60 "Academic Integrity".
+Policy 60 Penalty Guidelines for contract cheating (e.
+g.
+, viewing a solution on Chegg or 
+Discord) that only impacts you: F in course.
+Policy 60 Penalty Guidelines for contract cheating that facilitates cheating for others (e.
+g.
+, 
+posting a question to Chegg): Disciplinary Suspension.
+ACADEMIC MISCONDUCT 
+Committing academic misconduct, such as plagiarism and cheating, will trigger academic 
+penalties including failing grades, suspension and possibly expulsion from the University.
+As a TMU student, you are responsible for familiarizing yourself with the Student Code of 
+Academic Conduct.
+Policy on Non-Academic Conduct 
+No disruption of instructional activities is allowed.
+In particular, taking video/photos in 
+class is strictly prohibited since this violates the copyright and privacy policies.
+Among 
+many other infractions, the Code specifically refers to the following as a violation: 
+
+``Disruption of Learning and Teaching - Students shall not behave in disruptive ways that 
+obstruct the learning and teaching environment."
+In particular, the students can use the 
+laptops (and similar electronic devices) in class only for taking notes.
+The policy for remote synchronous content delivery over Zoom: the students are expected 
+to use a Chat Window only for asking or answering lecture-related questions, but not for 
+personal communication.
+The students can click on a "Raise a hand" icon in the 
+Participants window in Zoom, if they have a questions, or unmute themselves and ask a 
+question verbally.
+The students are expected to pay attention to a lecture and volunteer to 
+answer instructor's questions during the class-time.
+The students are normally expected to 
+keep their mics mute and unmute them only to answer instructor's questions.
+Make sure 
+there are no background noises and no audio distractions in your environment.
+In the case of in-person classes, in order to create an environment conducive to learning 
+and respectful of others rights, phones and pagers must be silenced during lectures.
+Students should refrain from arriving late and/or leaving the classroom before the lecture is 
+finished.
+In difficult cases, penalties can be imposed by the Student Conduct Officer.

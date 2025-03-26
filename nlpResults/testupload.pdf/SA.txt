@@ -1,0 +1,5 @@
+[Neutral | 0] This is a test.
+[Neutral | 0] Additional lines for nlp extraction 
+[Neutral | 0] This was extracted 
+[Neutral | 0] Wouessi 
+[Neutral | 0] Experience
