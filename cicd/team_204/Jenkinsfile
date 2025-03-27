@@ -1,6 +1,10 @@
 pipeline {
   agent any
     // PLaceholder text in place for kubernetes and docker variables. 
+  tools {
+    nodejs "node"
+  }
+
   triggers {
     pollSCM('* * * * *') // Check for new commits every minute
   }
