@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tdp-backend
+    env_file:
+      - apps/backend/.env
+    ports:
+      - "3000:3000"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    container_name: tdp-frontend
+    ports:
+      - "4000:4000"
