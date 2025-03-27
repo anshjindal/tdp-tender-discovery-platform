@@ -9,11 +9,11 @@ COPY ./migrations.json ./
 COPY ./tsconfig.base.json ./
 COPY ./tsconfig.json ./
 
-RUN mkdir ./apps-e2e
-COPY ./apps-e2e ./apps-e2e
+###RUN mkdir ./apps-e2e
+###COPY ./apps-e2e ./apps-e2e
 
-RUN mkdir -p ./apps/backend
-COPY ./apps/backend ./apps/backend
+###RUN mkdir -p ./apps/backend
+###COPY ./apps/backend ./apps/backend
 
 RUN npm ci
 
