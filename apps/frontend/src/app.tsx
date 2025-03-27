@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 import AppRoutes from "./routes/AppRoutes";
 import { useAuth } from "./auth/components/AuthContext";
 import { getaccountAPI } from "./api/api";
-
-// ADD:
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
