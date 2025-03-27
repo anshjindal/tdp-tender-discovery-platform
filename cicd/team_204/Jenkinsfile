@@ -23,14 +23,14 @@ pipeline {
         stage('Backend') {
           steps {
             dir('apps/backend') {
-              sh 'npm install'
+              bat 'npm install'
             }
           }
         }
         stage('Frontend') {
           steps {
             dir('apps/frontend') {
-              sh 'npm install'
+              bat 'npm install'
             }
           }
         }
@@ -42,14 +42,14 @@ pipeline {
         stage('Lint Backend') {
           steps {
             dir('apps/backend') {
-              sh 'npm run lint || true'
+              bat 'npm run lint || true'
             }
           }
         }
         stage('Lint Frontend') {
           steps {
             dir('apps/frontend') {
-              sh 'npm run lint || true'
+              bat 'npm run lint || true'
             }
           }
         }
@@ -61,14 +61,14 @@ pipeline {
         stage('Backend Tests') {
           steps {
             dir('apps/backend') {
-              sh 'npm test || true'
+              bat 'npm test || true'
             }
           }
         }
         stage('Frontend Tests') {
           steps {
             dir('apps/frontend') {
-              sh 'npm test || true'
+              bat 'npm test || true'
             }
           }
         }
@@ -77,15 +77,15 @@ pipeline {
 
     stage('Build Docker Images') {
       steps {
-        sh 'docker build -t $DOCKER_IMAGE_BACKEND:latest -f cicd/team_204/Dockerfile-backend/Dockerfile .'
-        sh 'docker build -t $DOCKER_IMAGE_FRONTEND:latest -f cicd/team_204/Dockerfile-frontend/Dockerfile .'
+        bat 'docker build -t $DOCKER_IMAGE_BACKEND:latest -f cicd/team_204/Dockerfile-backend/Dockerfile .'
+        bat 'docker build -t $DOCKER_IMAGE_FRONTEND:latest -f cicd/team_204/Dockerfile-frontend/Dockerfile .'
       }
     }
 
-    stage('Push Docker Images') {
+    stage('Pubat Docker Images') {
       steps {
         withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-          sh '''
+          bat '''
             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
             docker push $DOCKER_IMAGE_BACKEND:latest
             docker push $DOCKER_IMAGE_FRONTEND:latest
@@ -96,7 +96,7 @@ pipeline {
 
     stage('Deploy to Kubernetes') {
       steps {
-        sh '''
+        bat '''
           kubectl apply -f cicd/team_<your_team_name>/k8s/backend-deployment.yaml
           kubectl apply -f cicd/team_<your_team_name>/k8s/backend-service.yaml
           kubectl apply -f cicd/team_<your_team_name>/k8s/frontend-deployment.yaml
