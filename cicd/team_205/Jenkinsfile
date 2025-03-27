@@ -1,0 +1,109 @@
+pipeline {
+  agent any
+    // PLaceholder text in place for kubernetes and docker variables. 
+  triggers {
+    pollSCM('* * * * *') // Check for new commits every minute
+  }
+
+  environment {
+    DOCKER_IMAGE_BACKEND = "your-dockerhub-username/backend"
+    DOCKER_IMAGE_FRONTEND = "your-dockerhub-username/frontend"
+  }
+
+  stages {
+
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Install Dependencies') {
+      parallel {
+        stage('Backend') {
+          steps {
+            dir('apps/backend') {
+              sh 'npm install'
+            }
+          }
+        }
+        stage('Frontend') {
+          steps {
+            dir('apps/frontend') {
+              sh 'npm install'
+            }
+          }
+        }
+      }
+    }
+
+    stage('Lint') {
+      parallel {
+        stage('Lint Backend') {
+          steps {
+            dir('apps/backend') {
+              sh 'npm run lint || true'
+            }
+          }
+        }
+        stage('Lint Frontend') {
+          steps {
+            dir('apps/frontend') {
+              sh 'npm run lint || true'
+            }
+          }
+        }
+      }
+    }
+
+    stage('Run Tests') {
+      parallel {
+        stage('Backend Tests') {
+          steps {
+            dir('apps/backend') {
+              sh 'npm test || true'
+            }
+          }
+        }
+        stage('Frontend Tests') {
+          steps {
+            dir('apps/frontend') {
+              sh 'npm test || true'
+            }
+          }
+        }
+      }
+    }
+
+    stage('Build Docker Images') {
+      steps {
+        sh 'docker build -t $DOCKER_IMAGE_BACKEND:latest -f cicd/team_<your_team_name>/Dockerfile.backend .'
+        sh 'docker build -t $DOCKER_IMAGE_FRONTEND:latest -f cicd/team_<your_team_name>/Dockerfile.frontend .'
+      }
+    }
+
+    stage('Push Docker Images') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+          sh '''
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+            docker push $DOCKER_IMAGE_BACKEND:latest
+            docker push $DOCKER_IMAGE_FRONTEND:latest
+          '''
+        }
+      }
+    }
+
+    stage('Deploy to Kubernetes') {
+      steps {
+        sh '''
+          kubectl apply -f cicd/team_<your_team_name>/k8s/backend-deployment.yaml
+          kubectl apply -f cicd/team_<your_team_name>/k8s/backend-service.yaml
+          kubectl apply -f cicd/team_<your_team_name>/k8s/frontend-deployment.yaml
+          kubectl apply -f cicd/team_<your_team_name>/k8s/frontend-service.yaml
+          kubectl apply -f cicd/team_<your_team_name>/k8s/ingress.yaml
+        '''
+      }
+    }
+  }
+}
