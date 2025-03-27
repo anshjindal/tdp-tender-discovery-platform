@@ -2,7 +2,7 @@ pipeline {
   agent any
     // PLaceholder text in place for kubernetes and docker variables. 
   tools {
-    nodejs '23.10.0'
+    nodejs "node"
   }
 
   triggers {
