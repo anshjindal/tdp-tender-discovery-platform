@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tdp-backend
+  namespace: feat-tdp-201
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tdp-backend
+  template:
+    metadata:
+      labels:
+        app: tdp-backend
+    spec:
+      containers:
+        - name: tdp-backend
+          image: abdullahmustafa123/tdp-backend:feat_tdp_201-15
+          ports:
+            - containerPort: 3000

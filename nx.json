@@ -30,7 +30,9 @@
         }
       }
     },
-    {"plugin": "@nxlv/python"},
+    {
+      "plugin": "@nxlv/python"
+    },
     {
       "plugin": "@nx/webpack/plugin",
       "options": {
@@ -53,7 +55,10 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": ["apps/backend-e2e/**/*"]
+      "exclude": [
+        "apps/backend-e2e/**/*",
+        "apps/apps-e2e/**/*"
+      ]
     }
   ],
   "targetDefaults": {
