@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchNotebook } from "./utils/utils";
+import { fetchNotebook } from "../utils/utils";
 interface NotebookCellOutput {
   data?: {
       ["image/png"]?: string; 
