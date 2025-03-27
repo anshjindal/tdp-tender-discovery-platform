@@ -1,4 +1,4 @@
-FROM node:20 AS build
+FROM node:20
 
 WORKDIR /tdp
 
@@ -12,14 +12,14 @@ COPY ./tsconfig.json ./
 RUN mkdir ./apps-e2e
 COPY ./apps-e2e ./apps-e2e
 
-RUN npm i
+RUN mkdir -p ./apps/backend
+COPY ./apps/backend ./apps/backend
 
-RUN mkdir -p ./apps/frontend
-COPY ./apps/frontend ./apps/frontend
+RUN npm ci
 
-EXPOSE 4200
+EXPOSE 3000
 
-CMD ["sh", "-c", "npx nx sync && npm run start:frontend"]
+CMD ["npx", "nx", "serve", "backend"]
 
 LABEL branch="feat_tdp_204"
 
@@ -28,7 +28,7 @@ LABEL branch="feat_tdp_204"
 ## Note: Run these commands in the root folder (probably ./tdp-tender-discovery-platform)
 
 ### Command to build this Dockerfile:
-# docker build -f ./apps/frontend/Dockerfile -t frontend:feat_tdp_204 .
+# docker build -f .\cicd\team_204\Dockerfile-backend\Dockerfile -t backend:feat_tdp_204 .
 
 ### Command to run this Dockerfile:
-# docker run -d -p 4200:4200 frontend:feat_tdp_204
+# docker run -d -p 3000:3000 backend:feat_tdp_204
