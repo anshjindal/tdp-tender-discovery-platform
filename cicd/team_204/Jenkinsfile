@@ -6,8 +6,8 @@ pipeline {
   }
 
   environment {
-    DOCKER_IMAGE_BACKEND = "mohamedto17/backend"
-    DOCKER_IMAGE_FRONTEND = "mohamedto17/frontend"
+    DOCKER_IMAGE_BACKEND = "your-dockerhub-username/backend"
+    DOCKER_IMAGE_FRONTEND = "your-dockerhub-username/frontend"
   }
 
   stages {
