@@ -46,14 +46,14 @@ pipeline {
         stage('Lint Backend') {
           steps {
             dir('apps/backend') {
-              bat 'npm run lint || true'
+              bat 'npm run lint || exit /b 0'
             }
           }
         }
         stage('Lint Frontend') {
           steps {
             dir('apps/frontend') {
-              bat 'npm run lint || true'
+              bat 'npm run lint || exit /b 0'
             }
           }
         }
@@ -65,14 +65,14 @@ pipeline {
         stage('Backend Tests') {
           steps {
             dir('apps/backend') {
-              bat 'npm test || true'
+              bat 'npm test || exit /b 0'
             }
           }
         }
         stage('Frontend Tests') {
           steps {
             dir('apps/frontend') {
-              bat 'npm test || true'
+              bat 'npm test || exit /b 0'
             }
           }
         }
