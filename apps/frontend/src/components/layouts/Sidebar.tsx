@@ -21,6 +21,73 @@ const Sidebar = () => {
     setIsDropdownOpen((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
+  //Password
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const validatePassword = (password: string) => {
+    // Password validation regex for at least 8 characters, 1 uppercase, 1 special char, 1 number
+    const passRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*<>]).{8,}$/;
+    return passRegex.test(password);
+  };
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Reset error and success messages
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    if (!newPassword || !confirmPassword || !currentPassword) {
+      setErrorMessage('All fields are required.');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setErrorMessage('New password and confirmation do not match.');
+      return;
+    }
+
+    if (!validatePassword(newPassword)) {
+      setErrorMessage(
+        'Password must be at least 8 characters long, contain one uppercase letter, one number, and one special character.'
+      );
+      return;
+    }
+
+
+    try {
+      const response = await fetch("http://localhost:3000/api/v1/auth/change-password", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        },
+        body: JSON.stringify({ currentPassword, newPassword, confirmNewPassword: confirmPassword }),
+      });
+    
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.error || "An unknown error occurred.");
+      }
+    
+      
+      setSuccessMessage('Password changed successfully!');
+    } catch (error) {
+      console.error("Error Details:", error);  // More detailed logging
+      if (error instanceof Error) {
+        setErrorMessage(error.message || 'An unknown error occurred.');
+      } else {
+        setErrorMessage('An error occurred while changing the password.');
+      }
+    }
+    
+
+  };
+
   // Handle profile picture upload
   const handleProfilePictureUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -322,29 +389,48 @@ const Sidebar = () => {
                 {/* Change Password Section */}
                 <div className="border rounded-lg p-4">
                   <h3 className="font-medium mb-3">Change Password</h3>
+                  <form onSubmit={handlePasswordChange}>
                   <div className="space-y-3">
                     <div>
                       <label className="block text-sm text-gray-600 mb-1">Current Password</label>
                       <input
                         type="password"
+                        value={currentPassword}
                         className="w-full border rounded p-2"
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        required
                       />
                     </div>
                     <div>
                       <label className="block text-sm text-gray-600 mb-1">New Password</label>
                       <input
                         type="password"
+                        value={newPassword}
                         className="w-full border rounded p-2"
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        required
                       />
                     </div>
                     <div>
                       <label className="block text-sm text-gray-600 mb-1">Confirm Password</label>
                       <input
                         type="password"
+                        value={confirmPassword}
                         className="w-full border rounded p-2"
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
                       />
                     </div>
+                    {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
+                    {successMessage && <div style={{ color: 'green' }}>{successMessage}</div>}
+                    <button type="submit"
+                style={{ 
+                  backgroundColor: 'rgb(55, 50, 146)',
+                  color: 'white',
+                }}
+                className="px-4 py-2 text-white rounded-md text-sm font-medium hover:opacity-90 transition-opacity">Change Password</button>
                   </div>
+                  </form>
                 </div>
 
                 {/* Notification Preferences Section */}

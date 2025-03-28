@@ -3,6 +3,8 @@ import { Request, Response } from 'express';
 import { loginUser } from '../../services/userServices';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
+import { changePassword } from '../../services/userServices'; // Import the changePassword function
+
 const userServices = require('../../services/userServices');
 dotenv.config();
 
@@ -85,3 +87,29 @@ export async function testEmail(req: Request, res: Response) {
   }
 }
 
+// Handle change password
+export async function changePasswordHandler(req: Request, res: Response) {
+  try {
+    const { currentPassword, newPassword, confirmNewPassword } = req.body;
+    console.log('Request Body:', req.body);  // Debug line
+
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      return res.status(400).json({ error: 'All fields are required.' });
+    }
+
+    const { authorization } = req.headers;
+    if (!authorization) {
+      return res.status(401).json({ error: 'Authorization header is missing.' });
+    }
+
+    await changePassword(
+      { currentPassword, newPassword, confirmNewPassword },
+      authorization
+    );
+
+    return res.status(200).json({ message: 'Password has been changed successfully.' });
+  } catch (err: any) {
+    console.error(err);  // Log error for more details
+    return res.status(400).json({ error: err.message });
+  }
+}

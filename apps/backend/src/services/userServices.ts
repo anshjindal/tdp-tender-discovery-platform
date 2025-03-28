@@ -199,3 +199,73 @@ export async function forgotPassword({ email }: ForgotPasswordInput): Promise<vo
   }
 }
 
+// apps/backend/src/services/userServices.ts
+
+interface ChangePasswordInput {
+  currentPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+}
+
+export async function changePassword({
+  currentPassword,
+  newPassword,
+  confirmNewPassword,
+}: ChangePasswordInput, authHeader?: string): Promise<void> {
+  if (!currentPassword || !newPassword || !confirmNewPassword) {
+    throw new Error('All fields are required.');
+  }
+
+  if (newPassword !== confirmNewPassword) {
+    throw new Error('New password and confirmation do not match.');
+  }
+
+  if (!matchPass(newPassword)) {
+    throw new Error(
+      'New password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character.'
+    );
+  }
+
+  if (!authHeader) {
+    throw new Error('Authorization header is required.');
+  }
+
+  const token = authHeader.split(' ')[1];
+  if (!token) {
+    throw new Error('Token is missing.');
+  }
+
+  // Get the session and ensure it's valid
+  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+  
+  if (sessionError) {
+    throw new Error('Error retrieving session.');
+  }
+
+  // Check if there is a valid session
+  if (!sessionData || !sessionData.session) {
+    throw new Error('No active session found.');
+  }
+
+  const user = sessionData.session.user;
+  if (!user || !user.email) {
+    throw new Error('User email is not found.');
+  }
+
+  // Verify current password (you may need to implement this depending on your auth system)
+  const { error: loginError } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password: currentPassword,
+  });
+
+  if (loginError) {
+    throw new Error('Current password is incorrect.');
+  }
+
+  // Update the password
+  const { error } = await supabase.auth.updateUser({ password: newPassword });
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
