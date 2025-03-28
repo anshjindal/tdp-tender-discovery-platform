@@ -1,0 +1,55 @@
+# Build Stage - used bullseye instead of alpine
+
+FROM node:18-bullseye AS builder
+
+
+
+# Set working directory inside the container
+
+WORKDIR /app
+
+
+
+# Copy package.json first for caching optimization
+
+COPY package*.json ./
+
+
+
+# Copy node_modules from your local machine (since dependencies are already installed)
+# Change to COPY node_modules ./node_modules
+# Change to RUN npm i to install dependencies
+
+RUN npm i
+
+
+
+# Copy the rest of the app and build it
+
+COPY . .
+
+RUN npm run build
+
+
+
+# Production Stage (Using Nginx to serve static files)
+
+FROM nginx:alpine
+
+
+
+# Copy the built frontend from build output path
+
+COPY --from=builder /app/dist/apps/frontend /usr/share/nginx/html
+
+
+
+# Expose port 4000 based on .env
+
+EXPOSE 4000
+
+
+
+# Run Nginx
+
+CMD ["nginx", "-g", "daemon off;"]

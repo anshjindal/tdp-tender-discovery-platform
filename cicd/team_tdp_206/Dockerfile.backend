@@ -1,0 +1,39 @@
+# Use official Node.js image - used bullseye instead of alpine
+
+FROM node:18-bullseye
+
+
+
+# Set working directory inside the container
+
+WORKDIR /app
+
+
+
+# Copy package files first (for caching dependencies)
+
+COPY package*.json ./
+
+
+
+# Copy node_modules from your local system (if you've already installed dependencies)
+# Change to COPY node_modules ./node_modules
+# Change to RUN npm i for non-installed node modules
+RUN npm i
+
+
+# Copy the rest of the app
+
+COPY . .
+
+
+
+# Expose backend port based on .env
+
+EXPOSE 3000
+
+
+
+# Start the backend
+
+CMD ["npm", "run", "start:backend"]
