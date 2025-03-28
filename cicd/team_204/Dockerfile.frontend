@@ -19,7 +19,8 @@ COPY ./apps/frontend ./apps/frontend
 
 EXPOSE 4200
 
-CMD ["sh", "-c", "npx nx sync && npm run start:frontend"]
+CMD ["npx", "nx", "serve", "frontend"]
+
 
 LABEL branch="feat_tdp_204"
 
@@ -28,7 +29,7 @@ LABEL branch="feat_tdp_204"
 ## Note: Run these commands in the root folder (probably ./tdp-tender-discovery-platform)
 
 ### Command to build this Dockerfile:
-# docker build -f ./apps/frontend/Dockerfile -t frontend:feat_tdp_204 .
+# docker build -f cicd\team_204\Dockerfile.frontend -t frontend:feat_tdp_204 .
 
 ### Command to run this Dockerfile:
 # docker run -d -p 4200:4200 frontend:feat_tdp_204

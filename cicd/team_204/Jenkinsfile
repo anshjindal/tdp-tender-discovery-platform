@@ -1,13 +1,17 @@
 pipeline {
   agent any
     // PLaceholder text in place for kubernetes and docker variables. 
+  tools {
+    nodejs "node"
+  }
+
   triggers {
     pollSCM('* * * * *') // Check for new commits every minute
   }
 
   environment {
-    DOCKER_IMAGE_BACKEND = "your-dockerhub-username/backend"
-    DOCKER_IMAGE_FRONTEND = "your-dockerhub-username/frontend"
+    DOCKER_IMAGE_BACKEND = "your-username/backend"
+    DOCKER_IMAGE_FRONTEND = "your-username/frontend"
   }
 
   stages {
@@ -23,14 +27,14 @@ pipeline {
         stage('Backend') {
           steps {
             dir('apps/backend') {
-              sh 'npm install'
+              bat 'npm install'
             }
           }
         }
         stage('Frontend') {
           steps {
             dir('apps/frontend') {
-              sh 'npm install'
+              bat 'npm install'
             }
           }
         }
@@ -42,14 +46,14 @@ pipeline {
         stage('Lint Backend') {
           steps {
             dir('apps/backend') {
-              sh 'npm run lint || true'
+              bat 'npm run lint || exit /b 0'
             }
           }
         }
         stage('Lint Frontend') {
           steps {
             dir('apps/frontend') {
-              sh 'npm run lint || true'
+              bat 'npm run lint || exit /b 0'
             }
           }
         }
@@ -61,14 +65,14 @@ pipeline {
         stage('Backend Tests') {
           steps {
             dir('apps/backend') {
-              sh 'npm test || true'
+              bat 'npm test || exit /b 0'
             }
           }
         }
         stage('Frontend Tests') {
           steps {
             dir('apps/frontend') {
-              sh 'npm test || true'
+              bat 'npm test || exit /b 0'
             }
           }
         }
@@ -77,18 +81,18 @@ pipeline {
 
     stage('Build Docker Images') {
       steps {
-        sh 'docker build -t $DOCKER_IMAGE_BACKEND:latest -f cicd/team_<your_team_name>/Dockerfile.backend .'
-        sh 'docker build -t $DOCKER_IMAGE_FRONTEND:latest -f cicd/team_<your_team_name>/Dockerfile.frontend .'
+        bat 'docker build -t %DOCKER_IMAGE_FRONTEND%:latest -f cicd/team_204/Dockerfile.frontend .'
+        bat 'docker build -t %DOCKER_IMAGE_BACKEND%:latest -f cicd/team_204/Dockerfile.backend .'
       }
     }
 
-    stage('Push Docker Images') {
+    stage('Pubat Docker Images') {
       steps {
         withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-          sh '''
-            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-            docker push $DOCKER_IMAGE_BACKEND:latest
-            docker push $DOCKER_IMAGE_FRONTEND:latest
+          bat '''
+            echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+            docker push %DOCKER_IMAGE_BACKEND%:latest
+            docker push %DOCKER_IMAGE_FRONTEND%:latest
           '''
         }
       }
@@ -96,12 +100,12 @@ pipeline {
 
     stage('Deploy to Kubernetes') {
       steps {
-        sh '''
-          kubectl apply -f cicd/team_<your_team_name>/k8s/backend-deployment.yaml
-          kubectl apply -f cicd/team_<your_team_name>/k8s/backend-service.yaml
-          kubectl apply -f cicd/team_<your_team_name>/k8s/frontend-deployment.yaml
-          kubectl apply -f cicd/team_<your_team_name>/k8s/frontend-service.yaml
-          kubectl apply -f cicd/team_<your_team_name>/k8s/ingress.yaml
+        bat '''
+          kubectl apply -f cicd/team_204/k8s/backend-deployment.yaml
+          kubectl apply -f cicd/team_204/k8s/backend-service.yaml
+          kubectl apply -f cicd/team_204/k8s/frontend-deployment.yaml
+          kubectl apply -f cicd/team_204/k8s/frontend-service.yaml
+          kubectl apply -f cicd/team_204/k8s/ingress.yaml
         '''
       }
     }
