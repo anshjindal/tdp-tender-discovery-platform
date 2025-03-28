@@ -189,8 +189,8 @@ export async function forgotPassword({ email }: ForgotPasswordInput): Promise<vo
   if (!email) {
     throw { status: 400, message: 'Email is required.' };
   }
-
   const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    
     redirectTo: 'http://localhost:4200/forgot-reset-password',
   });
   
