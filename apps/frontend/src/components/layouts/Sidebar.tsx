@@ -133,6 +133,112 @@ const Sidebar = () => {
     reader.readAsDataURL(file);
   };
 
+  // Handle phone number change
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneNumberInput, setPhoneNumberInput] = useState("");
+  
+  const handlePhoneNumberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhoneNumberInput(e.target.value);
+  };
+
+  // Handle location change
+  const [location, setLocation] = useState("");
+  const [locationInput, setLocationInput] = useState("");
+
+  const handleLocationInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLocationInput(e.target.value);
+  };
+
+  // Handle bio change
+  const [userBio, setUserBio] = useState("");
+  const [userBioInput, setUserBioInput] = useState("");
+
+  const handleUserBioInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setUserBioInput(e.target.value);
+  };
+
+  // Handle Full Name Change
+  const [userFname, setUserFname] = useState("");
+  const [userFnameInput, setUserFnameInput] = useState("");
+
+  const handleUserFnameInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserFnameInput(e.target.value);
+  };
+
+  // Handle Email Notification Changes
+  const [isEmailChecked, setEmailChecked] = useState(false);
+  const [emailCheckboxState, setEmailCheckboxState] = useState(false);
+
+  const handleEmailCheckboxState = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmailChecked(e.target.checked);
+  };
+
+  // Handle Push Notification Changes
+  const [isPushChecked, setPushChecked] = useState(false);
+  const [pushCheckboxState, setPushCheckboxState] = useState(false);
+
+  const handlePushCheckboxState = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPushChecked(e.target.checked);
+  };
+
+  // Handle SMS Notification Changes
+  const [isSmsChecked, setSmsChecked] = useState(false);
+  const [smsCheckboxState, setSmsCheckboxState] = useState(false);
+
+  const handleSmsCheckboxState = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSmsChecked(e.target.checked);
+  };
+
+  // Handle saved changes
+  const handleSavedChanges = () => {
+    if(userFnameInput !== userFname){
+      setUserFname(userFnameInput);
+      alert("Full name saved: " + userFnameInput);
+    }
+    if(phoneNumberInput !== phoneNumber){
+      setPhoneNumber(phoneNumberInput);
+      alert("Phone number saved: " + phoneNumberInput);
+    }
+    if(locationInput !== location){
+      setLocation(locationInput);
+      alert("Location saved: " + locationInput);
+    }
+    if(userBioInput !== userBio){
+      setUserBio(userBioInput);
+      alert("User Bio saved: " + userBioInput);
+    }
+    if(emailCheckboxState !== isEmailChecked){
+      setEmailCheckboxState(isEmailChecked);
+      alert("Email notifications set to: " + isEmailChecked);
+    }
+    if(pushCheckboxState !== isPushChecked){
+      setPushCheckboxState(isPushChecked);
+      alert("Push notifications set to: " + isPushChecked);
+    }
+    if(smsCheckboxState !== isSmsChecked){
+      setSmsCheckboxState(isSmsChecked);
+      alert("Push notifications set to: " + isSmsChecked);
+    }
+  };
+
+  // Handle Cancel changes
+  const handleCancelChanges = () => {
+    setUserFname(userFname);
+    setPhoneNumber(phoneNumber);
+    setLocation(location); 
+    setUserBio(userBio);    
+    setEmailChecked(emailCheckboxState);
+    setPushChecked(pushCheckboxState);
+    setSmsChecked(smsCheckboxState);
+
+    setUserFnameInput(userFname); 
+    setPhoneNumberInput(phoneNumber); 
+    setLocationInput(location);
+    setUserBioInput(userBio); 
+    alert("Changes have been canceled");
+  };
+  
+
   // Handle logout
   const handleLogout = () => {
     setAuth({ isAuthenticated: false, user: { email: '', name: '' } });
@@ -255,7 +361,7 @@ const Sidebar = () => {
                     onClick={() => setIsModalOpen(true)}
                     className="block w-full text-left p-3 hover:bg-gray-600"
                   >
-                    Profile Setting
+                    Profile Settings
                   </button>
                 </li>
                 <li>
@@ -369,17 +475,20 @@ const Sidebar = () => {
                     <label className="block text-sm font-medium text-gray-700">Username</label>
                     <input
                       type="text"
-                      className="w-full border rounded p-2"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="block text-sm font-medium text-gray-700">Full Name</label>
-                    <input
-                      type="text"
                       defaultValue={auth.user.name}
                       className="w-full border rounded p-2"
                     />
                   </div>
+                  
+                <div className="space-y-1">
+                  <label className="block text-sm font-medium text-gray-700">Full Name</label>
+                  <input
+                    type="text"
+                    defaultValue={userFname || auth.user.name}
+                    onChange={handleUserFnameInputChange}
+                    className="w-full border rounded p-2"
+                  />
+                </div>
 
                   <div className="space-y-1">
                     <label className="block text-sm font-medium text-gray-700">Email</label>
@@ -389,53 +498,59 @@ const Sidebar = () => {
                       className="w-full border rounded p-2"
                     />
                   </div>
-
-                  <div className="space-y-1">
-                    <label className="block text-sm font-medium text-gray-700">Phone</label>
-                    <input
-                      type="tel"
-                      defaultValue=""
-                      placeholder="Add phone number"
-                      className="w-full border rounded p-2"
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="block text-sm font-medium text-gray-700">Location</label>
-                    <input
-                      type="text"
-                      defaultValue=""
-                      placeholder="City, Country"
-                      className="w-full border rounded p-2"
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="block text-sm font-medium text-gray-700">Bio</label>
-                    <textarea
-                      className="w-full border rounded p-2"
-                      rows={3}
-                      placeholder="Tell us about yourself..."
-                    />
-                  </div>
+                  
+                <div className="space-y-1">
+                  <label className="block text-sm font-medium text-gray-700">Phone</label>
+                  <input
+                    type="tel"
+                    defaultValue={phoneNumber}
+                    onChange={handlePhoneNumberInputChange}
+                    placeholder="Add phone number"
+                    className="w-full border rounded p-2"
+                  />
                 </div>
 
+                <div className="space-y-1">
+                  <label className="block text-sm font-medium text-gray-700">Location</label>
+                  <input
+                    type="text"
+                    defaultValue={location}
+                    onChange={handleLocationInputChange}
+                    placeholder="City, Country"
+                    className="w-full border rounded p-2"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-sm font-medium text-gray-700">Bio</label>
+                  <textarea
+                    className="w-full border rounded p-2"
+                    rows={3}
+                    defaultValue={userBio}
+                    placeholder="Tell us about yourself..."
+                    onChange={handleUserBioInputChange}
+                  />
+                </div>
 
               {/* Right Column - Security & Notifications */}
               <div className="space-y-6">
                 {/* Change Password Section */}
                 <div className="border rounded-lg p-4">
                   <h3 className="font-medium mb-3">Change Password</h3>
+
                   <form onSubmit={handlePasswordChange}>
+
                   <div className="space-y-3">
                     <div>
                       <label className="block text-sm text-gray-600 mb-1">Current Password</label>
                       <input
                         type="password"
+
                         value={currentPassword}
                         className="w-full border rounded p-2"
                         onChange={(e) => setCurrentPassword(e.target.value)}
                         required
+
                       />
                     </div>
                     <div>
@@ -471,56 +586,66 @@ const Sidebar = () => {
                 </div>
 
 
-                  {/* Notification Preferences Section */}
-                  <div className="border rounded-lg p-4">
-                    <h3 className="font-medium mb-3">Notification Preferences</h3>
-                    <div className="space-y-2">
-                      <label className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                        <span className="text-sm">Email Notifications</span>
-                      </label>
-                      <label className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                        <span className="text-sm">Push Notifications</span>
-                      </label>
-                      <label className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                        <span className="text-sm">SMS Notifications</span>
-                      </label>
-                    </div>
+                {/* Notification Preferences Section */}
+                <div className="border rounded-lg p-4">
+                  <h3 className="font-medium mb-3">Notification Preferences</h3>
+                  <div className="space-y-2">
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        name='email'
+                        checked={isEmailChecked}
+                        onChange={handleEmailCheckboxState}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <span className="text-sm">Email Notifications</span>
+                    </label>
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        name='push'
+                        checked={isPushChecked}
+                        onChange={handlePushCheckboxState}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <span className="text-sm">Push Notifications</span>
+                    </label>
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        name='sms'
+                        checked={isSmsChecked}
+                        onChange={handleSmsCheckboxState}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <span className="text-sm">SMS Notifications</span>
+                    </label>
                   </div>
                 </div>
               </div>
-
-              {/* Bottom Action Buttons */}
-              <div className="mt-6 pt-4 border-t flex justify-end space-x-4">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  style={{ 
-                    backgroundColor: 'rgb(55, 50, 146)',
-                    color: 'white',
-                  }}
-                  className="px-4 py-2 rounded-md text-sm font-medium hover:opacity-90 transition-opacity"
-                > 
-                  Save Changes
-                </button>
-              </div>
+            {/* Bottom Action Buttons */}
+            <div className="mt-6 pt-4 border-t flex justify-end space-x-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsModalOpen(false);
+                  handleCancelChanges();
+                 }}
+                className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                style={{ 
+                  backgroundColor: 'rgb(55, 50, 146)',
+                  color: 'white',
+                }}
+                onClick={handleSavedChanges}
+                className="px-4 py-2 text-white rounded-md text-sm font-medium hover:opacity-90 transition-opacity"
+              > 
+                Save Changes
+              </button>
             </div>
           </div>
         )}
