@@ -198,4 +198,3 @@ export async function forgotPassword({ email }: ForgotPasswordInput): Promise<vo
     throw { status: 400, message: error.message };
   }
 }
-
