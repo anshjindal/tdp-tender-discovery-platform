@@ -1,28 +1,9 @@
-<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 import { fetchNotebook } from "../utils/utils";
 interface NotebookCellOutput {
   data?: {
       ["image/png"]?: string; 
   };
-=======
-import { useState } from 'react'
-import ContractGrouping from './ContactGrouping'
-
-const BmMain = () => {
-
-  return (
-    <>
-        <h1>Bechmarking Module</h1>
-
-    {/* Render the ContractGrouping component */}
-    <div className="mt-10">
-        <ContractGrouping />
-      </div>
-
-    </>
-  )
->>>>>>> c3ea5273db361f38b9cf84684a36584f2a69dd83
 }
 
 interface NotebookCell {
