@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+
+    environment {
+        NODE_VERSION = '18.17.0'
+        NPM_VERSION = '9.6.7'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm ci'
+            }
+        }
+
+        stage('Lint') {
+            steps {
+                sh 'npm run lint'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh 'npm test'
+            }
+        }
+    }
+}
