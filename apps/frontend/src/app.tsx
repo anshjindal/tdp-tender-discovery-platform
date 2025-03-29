@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import AppRoutes from "./routes/AppRoutes";
 import { useAuth } from "./auth/components/AuthContext";
 import { getaccountAPI } from "./api/api";
+import { ChatContainer } from "./components/ChatContainer";
 
 // ADD:
 import { ToastContainer } from "react-toastify";
@@ -46,6 +47,8 @@ function App() {
       <AppRoutes />
       {/* Add ToastContainer so toast notifications can appear */}
       <ToastContainer />
+      {/* Add ChatContainer for the floating chat feature */}
+      <ChatContainer />
     </>
   );
 }
