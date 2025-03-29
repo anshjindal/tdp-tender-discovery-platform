@@ -22,34 +22,31 @@ const Login: React.FC = () => {
     
     try {
       const res = await loginAPI(data.email, data.password);
-      if (res.status === 200) {
-        console.log(">>>>>res",res.data.user.name);
-        localStorage.setItem('access_token', res.data.access_token);  
+      console.log("Login response:", res);
+      
+      if (res.data && res.data.access_token) {
+        localStorage.setItem('access_token', res.data.access_token);
+        localStorage.setItem('refresh_token', res.data.refresh_token);
         setAuth({
           isAuthenticated: true,
           user: {
-            email: "",
-            name: res.data.user.name||"", 
+            email: res.data.user.email,
+            name: res.data.user.name || res.data.user.email, 
           },
         });
   
-        alert("Login Successful!");
+        toast.success("Login Successful!");
         setTimeout(() => navigate('/'), 1000);
-      } 
-      else if (res.status === 403) {
-        // Handle lockout error
-        alert("Too many failed login attempts. Try again later.");
-      } 
-      else {
-        alert("Login failed. Please check your credentials and try again.");
-        console.error("Login failed", res);
+      } else {
+        toast.error("Login failed. Invalid response from server.");
+        console.error("Login failed - invalid response:", res);
       }
     } catch (error: any) {
+      console.error("Login error:", error);
       if (error.response?.status === 403) {
-        alert("Too many failed login attempts. Try again later.");
+        toast.error("Too many failed login attempts. Try again later.");
       } else {
-        alert("An error occurred during login.");
-        console.error("Login error", error);
+        toast.error(error.response?.data?.message || "An error occurred during login.");
       }
     } finally {
       setLoading(false); // Stop loading
