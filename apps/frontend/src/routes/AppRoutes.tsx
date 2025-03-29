@@ -52,7 +52,7 @@ const AppRoutes = () => {
         <Route path="tender/:subId" element={<TenderDetails />} />
 
         {/* Other Features */}
-        <Route path="ca" element={<CaMain />} />
+        <Route path="ca/camain" element={<CaMain />} />
         <Route path="ca/UploadDoc" element={<UploadDoc />} />
         <Route path="bm" element={<BmMain />} />
         <Route path="kb/kbmain" element={<KbMain />} />
