@@ -3,6 +3,7 @@ import { fetchNotebook } from "../utils/utils";
 import VisContractCountTrends from "./VisContractCountTrends";
 import AverageContractTrendsGraph from "./AverageContractTrendsGraph"; 
 import ITContractTrendAnalysis from "./ITContractTrendAnalysis";
+import ContractGrouping from "./ContactGrouping";
 
 interface NotebookCellOutput {
   data?: {
@@ -54,6 +55,11 @@ const BmMain: React.FC = () => {
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold text-[#5C5C5D] mb-6">Benchmarking Module</h1>
+
+      {/* Contract Trends Visualization */}
+      <div className="mb-10">
+        <ContractGrouping />
+      </div>
 
       {/* Contract Trends Visualization */}
       <div className="mb-10">
