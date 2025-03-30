@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { fetchNotebook } from "../utils/utils";
 import VisContractCountTrends from "./VisContractCountTrends";
 import AverageContractTrendsGraph from "./AverageContractTrendsGraph"; 
+import ITContractTrendAnalysis from "./ITContractTrendAnalysis";
 
 interface NotebookCellOutput {
   data?: {
@@ -62,6 +63,11 @@ const BmMain: React.FC = () => {
       {/* Average Contract Value Trends */}
       <div className="mb-10 bg-white p-6 shadow-lg rounded-lg">
         <AverageContractTrendsGraph />
+      </div>
+
+      {/* Contract Trends Visualization */}
+      <div className="mb-10">
+        <ITContractTrendAnalysis />
       </div>
 
       {/* Notebook Graphs */}
