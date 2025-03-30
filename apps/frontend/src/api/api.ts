@@ -6,7 +6,7 @@ import axios from "../utils/axios.customize";
  * @constant {string}
  */
 const API_BASE_URL = 'http://localhost:3000';
-const PDF_ANALYSIS_URL = 'http://localhost:4500';
+const PDF_ANALYSIS_URL = API_BASE_URL; // Use the same base URL for all endpoints
 
 /**
  * Interface defining the structure of a tender notice
