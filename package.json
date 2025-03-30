@@ -21,7 +21,6 @@
     "@nrwl/web": "^19.8.4",
     "@types/nodemailer": "^6.4.17",
     "axios": "^1.6.0",
-    "chart.js": "^4.4.0",
     "express": "4.21.2",
     "express-rate-limit": "^7.5.0",
     "lucide-react": "^0.477.0",
