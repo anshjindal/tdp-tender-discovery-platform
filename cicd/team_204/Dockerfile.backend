@@ -15,7 +15,7 @@ COPY ./tsconfig.json ./
 ###RUN mkdir -p ./apps/backend
 ###COPY ./apps/backend ./apps/backend
 
-RUN npm install
+RUN npm cache clean --force && npm install
 
 EXPOSE 3000
 
