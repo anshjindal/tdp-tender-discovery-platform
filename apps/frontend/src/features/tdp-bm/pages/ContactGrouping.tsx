@@ -10,6 +10,8 @@ interface Contract {
   department: string | null;
 }
 
+type SortOption = 'date-asc' | 'date-desc' | 'value-asc' | 'value-desc' | 'none';
+
 const ContractGrouping: React.FC = () => {
   const [allContracts, setAllContracts] = useState<Contract[]>([]);
   const [displayedContracts, setDisplayedContracts] = useState<Contract[]>([]);
@@ -18,6 +20,7 @@ const ContractGrouping: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sortOption, setSortOption] = useState<SortOption>('none');
 
   const contractsPerPage = 5;
 
@@ -75,13 +78,12 @@ const ContractGrouping: React.FC = () => {
       : 'Proven Solutions';
   };
 
-  // Safe string search helper
   const safeSearch = (text: string | null, term: string): boolean => {
     if (!text) return false;
     return text.toLowerCase().includes(term);
   };
 
-  // Get filtered contracts based on current filters
+  
   const getFilteredContracts = () => {
     let filtered = allContracts;
     
@@ -101,17 +103,37 @@ const ContractGrouping: React.FC = () => {
         safeSearch(contract.department, term)
       );
     }
+
+    // Apply sorting
+    switch (sortOption) {
+      case 'date-asc':
+        filtered.sort((a, b) => new Date(a.contract_date).getTime() - new Date(b.contract_date).getTime());
+        break;
+      case 'date-desc':
+        filtered.sort((a, b) => new Date(b.contract_date).getTime() - new Date(a.contract_date).getTime());
+        break;
+      case 'value-asc':
+        filtered.sort((a, b) => a.contract_value - b.contract_value);
+        break;
+      case 'value-desc':
+        filtered.sort((a, b) => b.contract_value - a.contract_value);
+        break;
+      case 'none':
+      default:
+        // No sorting
+        break;
+    }
     
     return filtered;
   };
 
-  // Update displayed contracts when filters or page changes
+  // Update displayed contracts when filters, sort, or page changes
   useEffect(() => {
     const filtered = getFilteredContracts();
     const startIndex = (currentPage - 1) * contractsPerPage;
     const endIndex = startIndex + contractsPerPage;
     setDisplayedContracts(filtered.slice(startIndex, endIndex));
-  }, [category, searchTerm, currentPage, allContracts]);
+  }, [category, searchTerm, currentPage, sortOption, allContracts]);
 
   // Calculate total pages
   const totalFilteredContracts = getFilteredContracts().length;
@@ -122,6 +144,12 @@ const ContractGrouping: React.FC = () => {
     setCurrentPage(page);
   };
 
+  // Handle sort change
+  const handleSort = (option: SortOption) => {
+    setSortOption(option);
+    setCurrentPage(1); 
+  };
+
   if (loading) return <div className="text-center text-gray-500 p-8">Loading contract data...</div>;
   if (error) return <div className="text-center text-red-500 p-8 bg-red-50 rounded">{error}</div>;
   if (allContracts.length === 0) return <div className="text-center text-gray-500 p-8">No contract data available</div>;
@@ -130,49 +158,84 @@ const ContractGrouping: React.FC = () => {
     <div className="p-8 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold text-gray-700 mb-6">IT Contracts</h1>
       
-      {/* Filters */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+      {/* Filters and Sorting */}
+      <div className="flex flex-col gap-4 mb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div className="flex space-x-2">
+            <button
+              onClick={() => {
+                setCategory('All');
+                setCurrentPage(1);
+              }}
+              className={`px-4 py-2 rounded-md ${category === 'All' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+            >
+              All Contracts
+            </button>
+            <button
+              onClick={() => {
+                setCategory('Proven Solutions');
+                setCurrentPage(1);
+              }}
+              className={`px-4 py-2 rounded-md ${category === 'Proven Solutions' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+            >
+              Proven Solutions
+            </button>
+            <button
+              onClick={() => {
+                setCategory('Services');
+                setCurrentPage(1);
+              }}
+              className={`px-4 py-2 rounded-md ${category === 'Services' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+            >
+              Services
+            </button>
+          </div>
+          
+          <div className="w-full md:w-64">
+            <input
+              type="text"
+              placeholder="Search contracts..."
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+            />
+          </div>
+        </div>
+
         <div className="flex space-x-2">
           <button
-            onClick={() => {
-              setCategory('All');
-              setCurrentPage(1);
-            }}
-            className={`px-4 py-2 rounded-md ${category === 'All' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+            onClick={() => handleSort(sortOption === 'date-asc' ? 'date-desc' : 'date-asc')}
+            className={`px-4 py-2 rounded-md ${
+              sortOption === 'date-asc' || sortOption === 'date-desc' 
+                ? 'bg-purple-600 text-white' 
+                : 'bg-gray-200 text-gray-700'
+            }`}
           >
-            All Contracts
+            Sort by Date {sortOption === 'date-asc' ? '↑' : sortOption === 'date-desc' ? '↓' : ''}
           </button>
           <button
-            onClick={() => {
-              setCategory('Proven Solutions');
-              setCurrentPage(1);
-            }}
-            className={`px-4 py-2 rounded-md ${category === 'Proven Solutions' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+            onClick={() => handleSort(sortOption === 'value-asc' ? 'value-desc' : 'value-asc')}
+            className={`px-4 py-2 rounded-md ${
+              sortOption === 'value-asc' || sortOption === 'value-desc' 
+                ? 'bg-purple-600 text-white' 
+                : 'bg-gray-200 text-gray-700'
+            }`}
           >
-            Proven Solutions
+            Sort by Value {sortOption === 'value-asc' ? '↑' : sortOption === 'value-desc' ? '↓' : ''}
           </button>
           <button
-            onClick={() => {
-              setCategory('Services');
-              setCurrentPage(1);
-            }}
-            className={`px-4 py-2 rounded-md ${category === 'Services' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+            onClick={() => handleSort('none')}
+            className={`px-4 py-2 rounded-md ${
+              sortOption === 'none' 
+                ? 'bg-gray-600 text-white' 
+                : 'bg-gray-200 text-gray-700'
+            }`}
           >
-            Services
+            Clear Sort
           </button>
-        </div>
-        
-        <div className="w-full md:w-64">
-          <input
-            type="text"
-            placeholder="Search contracts..."
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
-            }}
-          />
         </div>
       </div>
       
@@ -283,6 +346,9 @@ const ContractGrouping: React.FC = () => {
       {/* Summary */}
       <div className="mt-4 text-sm text-gray-500 text-center">
         <p>Page {currentPage} of {totalPages} | Showing {displayedContracts.length} of {totalFilteredContracts} contracts</p>
+        {sortOption !== 'none' && (
+          <p>Sorted by: {sortOption.replace('-asc', ' (ascending)').replace('-desc', ' (descending)')}</p>
+        )}
       </div>
     </div>
   );
