@@ -35,6 +35,7 @@ pipeline {
           steps {
             dir('apps/frontend') {
               bat 'npm install'
+              bat 'npm install chart.js'
             }
           }
         }
