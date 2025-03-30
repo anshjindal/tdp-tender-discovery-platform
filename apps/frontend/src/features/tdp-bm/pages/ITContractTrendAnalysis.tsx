@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Chart, LineController, CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend, Filler } from 'chart.js';
+import { Chart, LineController, BarController, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Tooltip, Legend, Filler } from 'chart.js';
 
-// Register only the necessary Chart.js components
+// Register Chart.js components
 Chart.register(
   LineController,
+  BarController,
   CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Tooltip,
   Legend,
   Filler
@@ -22,7 +24,6 @@ interface ITContract {
   original_value?: number;
   amendment_value?: number;
   description_en?: string;
-  solicitation_procedure?: string;
   department?: string;
 }
 
@@ -31,6 +32,7 @@ const ITContractTrendAnalysis: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [timePeriod, setTimePeriod] = useState<'monthly' | 'quarterly' | 'yearly'>('quarterly');
+  const [topVendors, setTopVendors] = useState<string[]>([]);
 
   // Date range for analysis
   const startDate = new Date('2020-01-01');
@@ -42,13 +44,11 @@ const ITContractTrendAnalysis: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        // Try loading just the first few chunks initially
-        const chunksToLoad = 5; // Start with fewer chunks for testing
+        // Load first 5 chunks for testing
+        const chunksToLoad = 5;
         const chunkFiles = Array.from({ length: chunksToLoad }, (_, i) => 
           `/it_contracts_chunks/chunk_${i}.json`
         );
-
-        console.log('Attempting to load chunks:', chunkFiles);
 
         const chunkPromises = chunkFiles.map(async (file, index) => {
           try {
@@ -58,7 +58,7 @@ const ITContractTrendAnalysis: React.FC = () => {
               return [];
             }
             const data = await response.json();
-            console.log(`Successfully loaded chunk ${index} with ${data.length} contracts`);
+            console.log(`Loaded chunk ${index} with ${data.length} contracts`);
             return data;
           } catch (err) {
             console.error(`Error loading chunk ${index}:`, err);
@@ -69,15 +69,10 @@ const ITContractTrendAnalysis: React.FC = () => {
         const chunks = await Promise.all(chunkPromises);
         const allContracts: ITContract[] = chunks.flat();
 
-        console.log('Total contracts loaded:', allContracts.length);
-
-        // Basic validation - just check for contract_date and any value field
+        // Filter contracts with required fields
         const filteredContracts = allContracts.filter(contract => {
-          if (!contract?.contract_date) {
-            console.warn('Contract missing date:', contract);
-            return false;
-          }
-
+          if (!contract?.contract_date || !contract?.vendor_name) return false;
+          
           try {
             const contractDate = new Date(contract.contract_date);
             const isValidDate = !isNaN(contractDate.getTime()) && 
@@ -88,35 +83,33 @@ const ITContractTrendAnalysis: React.FC = () => {
                            contract.original_value || 
                            contract.amendment_value;
 
-            if (!isValidDate) {
-              console.warn('Contract date out of range:', contract.contract_date);
-            }
-            if (!hasValue) {
-              console.warn('Contract missing value fields:', contract);
-            }
-
             return isValidDate && hasValue;
           } catch (e) {
-            console.warn('Invalid contract date format:', contract.contract_date);
+            console.warn('Invalid contract date:', contract.contract_date);
             return false;
           }
         });
 
-        console.log('Valid contracts after filtering:', filteredContracts.length);
-
         if (filteredContracts.length === 0) {
-          throw new Error(`
-            No valid contracts found. Please verify:
-            1. Files exist at /it_contracts_chunks/chunk_0.json etc.
-            2. Files contain contracts with:
-               - contract_date between 2020-01-01 and 2025-03-27
-               - At least one value field (contract_value, original_value, or amendment_value)
-          `);
+          throw new Error('No valid contracts found. Please check your data files.');
         }
 
+        // Identify top 5 vendors by total contract value
+        const vendorTotals: Record<string, number> = {};
+        filteredContracts.forEach(contract => {
+          const value = contract.contract_value || contract.original_value || contract.amendment_value || 0;
+          vendorTotals[contract.vendor_name!] = (vendorTotals[contract.vendor_name!] || 0) + value;
+        });
+
+        const sortedVendors = Object.entries(vendorTotals)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5)
+          .map(([vendor]) => vendor);
+
+        setTopVendors(sortedVendors);
         setContracts(filteredContracts);
       } catch (err) {
-        console.error('Error in fetchContractData:', err);
+        console.error('Error loading data:', err);
         setError(err instanceof Error ? err.message : 'Failed to load contract data');
       } finally {
         setLoading(false);
@@ -126,10 +119,34 @@ const ITContractTrendAnalysis: React.FC = () => {
     fetchContractData();
   }, []);
 
-  // Process data for the single chart
+  // Process data for both charts
   const processChartData = () => {
-    const labels: string[] = [];
-    const values: number[] = [];
+    const valueTrend = {
+      labels: [] as string[],
+      values: [] as number[]
+    };
+
+    const vendorTrend = {
+      labels: [] as string[],
+      datasets: [] as {label: string, data: number[], backgroundColor: string}[]
+    };
+
+    // Initialize vendor data structure
+    const vendorColors = [
+      'rgba(54, 162, 235, 0.7)',
+      'rgba(255, 99, 132, 0.7)',
+      'rgba(75, 192, 192, 0.7)',
+      'rgba(255, 159, 64, 0.7)',
+      'rgba(153, 102, 255, 0.7)'
+    ];
+
+    topVendors.forEach((vendor, index) => {
+      vendorTrend.datasets.push({
+        label: vendor,
+        data: [],
+        backgroundColor: vendorColors[index] || 'rgba(201, 203, 207, 0.7)'
+      });
+    });
 
     const currentDate = new Date(startDate);
     while (currentDate <= endDate) {
@@ -158,100 +175,162 @@ const ITContractTrendAnalysis: React.FC = () => {
         }
       });
 
-      // Calculate average value
+      // Calculate average value for value trend
       const totalValue = periodContracts.reduce((sum, contract) => {
         return sum + (contract.contract_value || contract.original_value || contract.amendment_value || 0);
       }, 0);
 
       const avgValue = periodContracts.length > 0 ? Math.round(totalValue / periodContracts.length) : 0;
 
-      labels.push(label);
-      values.push(avgValue);
+      // Calculate vendor totals for this period
+      const vendorValues: Record<string, number> = {};
+      topVendors.forEach(vendor => {
+        vendorValues[vendor] = 0;
+      });
+
+      periodContracts.forEach(contract => {
+        const value = contract.contract_value || contract.original_value || contract.amendment_value || 0;
+        if (topVendors.includes(contract.vendor_name!)) {
+          vendorValues[contract.vendor_name!] += value;
+        }
+      });
+
+      // Store data for both charts
+      valueTrend.labels.push(label);
+      valueTrend.values.push(avgValue);
+
+      vendorTrend.labels.push(label);
+      vendorTrend.datasets.forEach(dataset => {
+        dataset.data.push(vendorValues[dataset.label] || 0);
+      });
 
       // Move to next period
       currentDate.setTime(periodEnd.getTime());
     }
 
-    return { labels, values };
+    return { valueTrend, vendorTrend };
   };
 
-  // Render the single chart
+  // Render both charts
   useEffect(() => {
-    if (contracts.length === 0) return;
+    if (contracts.length === 0 || topVendors.length === 0) return;
 
-    const { labels, values } = processChartData();
-    console.log('Chart data:', { labels, values });
+    const { valueTrend, vendorTrend } = processChartData();
+    console.log('Processed chart data:', { valueTrend, vendorTrend });
 
-    const canvas = document.getElementById('valueTrendChart');
-    if (!canvas) return;
+    // Render Average Value Trend Chart
+    const renderValueChart = () => {
+      const canvas = document.getElementById('valueTrendChart');
+      if (!canvas) return;
 
-    const ctx = (canvas as HTMLCanvasElement).getContext('2d');
-    if (!ctx) return;
+      const ctx = (canvas as HTMLCanvasElement).getContext('2d');
+      if (!ctx) return;
 
-    // Destroy previous chart
-    const existingChart = Chart.getChart(canvas);
-    if (existingChart) existingChart.destroy();
+      const existingChart = Chart.getChart(canvas as HTMLCanvasElement);
+      if (existingChart) existingChart.destroy();
 
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Average Contract Value (CAD$)',
-          data: values,
-          borderColor: 'rgba(54, 162, 235, 0.8)',
-          backgroundColor: 'rgba(54, 162, 235, 0.2)',
-          tension: 0.3,
-          borderWidth: 2,
-          fill: true
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'top',
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: valueTrend.labels,
+          datasets: [{
+            label: 'Average Contract Value (CAD$)',
+            data: valueTrend.values,
+            borderColor: 'rgba(54, 162, 235, 0.8)',
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            tension: 0.3,
+            borderWidth: 2,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+            tooltip: {
+              callbacks: {
+                label: (context) => {
+                  return `Average: $${context.raw?.toLocaleString() || '0'}`;
+                }
+              }
+            }
           },
-          tooltip: {
-            callbacks: {
-              label: (context) => {
-                return `Average: $${context.raw?.toLocaleString() || '0'}`;
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: (value) => `$${Number(value).toLocaleString()}`
               }
             }
           }
+        }
+      });
+    };
+
+    // Render Vendor Value Trend Chart
+    const renderVendorChart = () => {
+      const canvas = document.getElementById('vendorTrendChart');
+      if (!canvas) return;
+
+      const ctx = (canvas as HTMLCanvasElement).getContext('2d');
+      if (!ctx) return;
+
+      const existingChart = Chart.getChart(canvas as HTMLCanvasElement);
+      if (existingChart) existingChart.destroy();
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: vendorTrend.labels,
+          datasets: vendorTrend.datasets
         },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              callback: (value) => `$${Number(value).toLocaleString()}`
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+            tooltip: {
+              callbacks: {
+                label: (context) => {
+                  return `${context.dataset.label}: $${context.raw?.toLocaleString() || '0'}`;
+                }
+              }
             }
           },
-          x: {
-            title: {
-              display: true,
-              text: 'Time Period'
+          scales: {
+            y: {
+              beginAtZero: true,
+              stacked: false,
+              ticks: {
+                callback: (value) => `$${Number(value).toLocaleString()}`
+              }
             }
           }
         }
-      }
-    });
-  }, [contracts, timePeriod]);
+      });
+    };
+
+    renderValueChart();
+    renderVendorChart();
+  }, [contracts, timePeriod, topVendors]);
 
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center p-8">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
         <p className="text-gray-600">Loading contract data...</p>
-        <p className="text-sm text-gray-500 mt-2">Checking chunks 0-4</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 border-l-4 border-red-500 p-4">
+      <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
         <div className="flex">
           <div className="flex-shrink-0">
             <svg className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
@@ -259,18 +338,9 @@ const ITContractTrendAnalysis: React.FC = () => {
             </svg>
           </div>
           <div className="ml-3">
-            <h3 className="text-sm font-medium text-red-800">Data Loading Error</h3>
+            <h3 className="text-sm font-medium text-red-800">Error loading data</h3>
             <div className="mt-2 text-sm text-red-700">
               <p>{error}</p>
-              <div className="mt-3 bg-white p-3 rounded border border-red-200">
-                <h4 className="font-medium mb-1">Troubleshooting Steps:</h4>
-                <ol className="list-decimal pl-5 space-y-1">
-                  <li>Check browser console for detailed errors</li>
-                  <li>Verify files exist at: <code>/it_contracts_chunks/chunk_0.json</code> etc.</li>
-                  <li>Ensure files contain valid JSON with contract data</li>
-                  <li>Check that contracts have dates between 2020-2025 and value fields</li>
-                </ol>
-              </div>
             </div>
           </div>
         </div>
@@ -279,11 +349,11 @@ const ITContractTrendAnalysis: React.FC = () => {
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm max-w-4xl mx-auto">
+    <div className="bg-white p-6 rounded-lg shadow-sm max-w-6xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-gray-800 mb-1">IT Contract Value Trend</h1>
+        <h1 className="text-xl font-bold text-gray-800 mb-1">IT Contract Trends</h1>
         <p className="text-gray-600 text-sm">
-          {contracts.length.toLocaleString()} contracts analyzed • {startDate.toLocaleDateString()} - {endDate.toLocaleDateString()}
+          Analyzing {contracts.length.toLocaleString()} contracts from {startDate.toLocaleDateString()} to {endDate.toLocaleDateString()}
         </p>
       </div>
 
@@ -308,21 +378,36 @@ const ITContractTrendAnalysis: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-white p-4 border border-gray-200 rounded-lg">
-        <div className="relative h-64">
-          <canvas id="valueTrendChart" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Average Value Trend Chart */}
+        <div className="bg-white p-4 border border-gray-200 rounded-lg">
+          <h2 className="text-lg font-semibold text-gray-800 mb-3">Average Contract Value</h2>
+          <div className="relative h-64">
+            <canvas id="valueTrendChart" />
+          </div>
+          <p className="mt-2 text-xs text-gray-500 text-center">
+            Average value of IT contracts over time
+          </p>
         </div>
-        <p className="mt-2 text-xs text-gray-500 text-center">
-          Showing average values for {timePeriod} periods
-        </p>
+
+        {/* Top Vendors Trend Chart */}
+        <div className="bg-white p-4 border border-gray-200 rounded-lg">
+          <h2 className="text-lg font-semibold text-gray-800 mb-3">Top Vendors by Value</h2>
+          <div className="relative h-64">
+            <canvas id="vendorTrendChart" />
+          </div>
+          <p className="mt-2 text-xs text-gray-500 text-center">
+            Top 5 vendors by total contract value
+          </p>
+        </div>
       </div>
 
       <div className="mt-6 bg-gray-50 p-3 rounded text-sm">
-        <h3 className="font-medium mb-1">Data Status:</h3>
+        <h3 className="font-medium mb-1">Data Summary:</h3>
         <ul className="space-y-1">
           <li>• Loaded {contracts.length.toLocaleString()} valid contracts</li>
-          <li>• From chunks 0-4 in /it_contracts_chunks/</li>
-          <li>• Date range: {startDate.toLocaleDateString()} to {endDate.toLocaleDateString()}</li>
+          <li>• Showing {timePeriod} trends from {startDate.toLocaleDateString()} to {endDate.toLocaleDateString()}</li>
+          <li>• Top vendors: {topVendors.join(', ')}</li>
         </ul>
       </div>
     </div>
