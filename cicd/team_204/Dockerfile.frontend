@@ -12,7 +12,7 @@ COPY ./tsconfig.json ./
 RUN mkdir ./apps-e2e
 COPY ./apps-e2e ./apps-e2e
 
-RUN npm cache clean --force && npm install
+RUN npm install
 
 RUN mkdir -p ./apps/frontend
 COPY ./apps/frontend ./apps/frontend
