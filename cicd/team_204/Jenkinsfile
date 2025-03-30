@@ -10,8 +10,8 @@ pipeline {
   }
 
   environment {
-    DOCKER_IMAGE_BACKEND = "mohamedto17/backend"
-    DOCKER_IMAGE_FRONTEND = "mohamedto17/frontend"
+    DOCKER_IMAGE_BACKEND = "your-username/backend"
+    DOCKER_IMAGE_FRONTEND = "your-username/frontend"
   }
 
   stages {
@@ -81,8 +81,8 @@ pipeline {
 
     stage('Build Docker Images') {
       steps {
-        bat 'docker build -t %DOCKER_IMAGE_FRONTEND%:latest -f cicd/team_204/Dockerfile.frontend .'
         bat 'docker build -t %DOCKER_IMAGE_BACKEND%:latest -f cicd/team_204/Dockerfile.backend .'
+        bat 'docker build -t %DOCKER_IMAGE_FRONTEND%:latest -f cicd/team_204/Dockerfile.frontend .'
       }
     }
 

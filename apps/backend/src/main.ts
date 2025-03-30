@@ -36,7 +36,7 @@ const targetColumns = [
   'solicitationNumber-numeroSollicitation',
   'publicationDate-datePublication',
   'tenderClosingDate-appelOffresDateCloture',
-  'amendmentDate-dateModification',
+'amendmentDate-dateModification',
   'expectedContractStartDate-dateDebutContratPrevue',
   'expectedContractEndDate-dateFinContratPrevue',
   'tenderStatus-appelOffresStatut-eng',
@@ -448,7 +448,7 @@ io.on('connection', (socket) => {
   // you must do so within this scope (or pass it along to a helper):
   if (token) {
     // Or pass `token` to your subscription init function
-    initSupaBaseSubscription(token,io);
+    initSupaBaseSubscription({ token }, io);
   }
 });
 
