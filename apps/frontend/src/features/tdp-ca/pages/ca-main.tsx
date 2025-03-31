@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { analyzePdf, getRfpAnalysis } from '../../../api/api'
+import { analyzePdf, getRfpAnalysis } from '../../api/api'
 
 const CaMain = () => {
   const [file, setFile] = useState<File | null>(null)
@@ -82,15 +82,44 @@ const CaMain = () => {
 ) : (
   'No data available'
 )}
-        {/* {data
-          ? data.sentences_with_dates.map((sentence: string, index: number) => {
-              return (
-                <div className="m-4 font-bold" key={index}>
-                  {sentence}
-                </div>
-              )
-            })
-          : 'No data'} */}
+        {data ? (
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-5 p-4">
+    
+    {/* Entities */}
+    <div className="bg-white shadow-md rounded-lg p-4">
+      <h3 className="text-lg font-semibold text-gray-700">Entities</h3>
+      <ul className="list-disc list-inside text-gray-600">
+        {data.entities.map((entity, index) => (
+          <li key={index}>{entity}</li>
+        ))}
+      </ul>
+    </div>
+
+    {/* Dates */}
+    <div className="bg-white shadow-md rounded-lg p-4">
+      <h3 className="text-lg font-semibold text-gray-700">Sentences with Dates</h3>
+      <ul className="list-disc list-inside text-gray-600">
+        {data.sentences_with_dates.map((sentence, index) => (
+          <li key={index}>{sentence}</li>
+        ))}
+      </ul>
+    </div>
+
+    {/* Money */}
+    <div className="bg-white shadow-md rounded-lg p-4">
+      <h3 className="text-lg font-semibold text-gray-700">Sentences with Money</h3>
+      <ul className="list-disc list-inside text-gray-600">
+        {data.sentences_with_money.map((sentence, index) => (
+          <li key={index}>{sentence}</li>
+        ))}
+      </ul>
+    </div>
+
+  </div>
+) : (
+  <p className="text-gray-500">No data available</p>
+)}
+
       </div>
     </>
   )
