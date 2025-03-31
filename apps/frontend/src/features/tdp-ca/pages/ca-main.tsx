@@ -10,7 +10,7 @@ const CaMain = () => {
     sentences_with_money: string[]
   }
 
-  const [data, setData] = useState('')
+  const [data, setData] = useState<any>({}) // updated to accept object
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -34,9 +34,10 @@ const CaMain = () => {
       console.error(e)
     }
   }
+
   return (
     <>
-    <h1>Capability Assessment Module</h1>
+      <h1>Capability Assessment Module</h1>
 
       <div>
         <form onSubmit={handleSubmit}>
@@ -53,16 +54,31 @@ const CaMain = () => {
             className="bg-black text-white p-12 hover:scale-110"
           />
         </form>
-{data}
-        {/* {data
-          ? data.sentences_with_dates.map((sentence: string, index: number) => {
-              return (
-                <div className="m-4 font-bold" key={index}>
-                  {sentence}
-                </div>
-              )
-            })
-          : 'No data'} */}
+
+        {typeof data === 'object' && data.verdict && (
+          <div className="p-4 border rounded bg-gray-50 mt-4">
+            <h2 className="text-lg font-semibold">Verdict</h2>
+            <p>{data.verdict}</p>
+            <p className="text-sm text-gray-600">{data.explanation}</p>
+
+            {data.matched_keywords?.length > 0 && (
+              <div className="mt-2">
+                <h3 className="text-sm font-medium">Matched Keywords:</h3>
+                <ul className="list-disc list-inside">
+                  {data.matched_keywords.map((kw: string, index: number) => (
+                    <li key={index}>{kw}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {data.processing_time_seconds && (
+              <p className="text-xs mt-2 text-right text-gray-500">
+                Processed in {data.processing_time_seconds.toFixed(2)}s
+              </p>
+            )}
+          </div>
+        )}
       </div>
     </>
   )
