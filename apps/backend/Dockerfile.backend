@@ -1,0 +1,29 @@
+# Development build stage
+FROM node:20-alpine AS development
+
+WORKDIR /app
+
+# Install dependencies without dev dependencies
+COPY package*.json ./
+RUN npm ci
+
+# Copy full source and build backend
+COPY . .
+RUN npx nx build backend
+
+# Production runtime stage
+FROM node:20-alpine AS production
+
+ENV NODE_ENV=production
+WORKDIR /app
+USER node
+
+# Copy compiled backend code
+COPY --from=development /app/dist/apps/backend ./
+
+# Copy package files and install production-only deps
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+# Start the app
+CMD ["node", "--env-file=.env", "dist/main.js"]

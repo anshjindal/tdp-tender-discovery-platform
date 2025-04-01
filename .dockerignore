@@ -1,0 +1,12 @@
+node_modules
+dist
+tmp
+.git
+.gitignore
+*.log
+apps/**/node_modules
+apps/**/dist
+packages/**/node_modules
+coverage
+*.tsbuildinfo
+.env

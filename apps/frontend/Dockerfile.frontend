@@ -1,0 +1,24 @@
+# Stage 1: Build React frontend with Nx
+FROM node:20-alpine AS development
+
+WORKDIR /app
+
+# Install dependencies (fast and clean)
+COPY package*.json ./
+RUN npm ci
+
+# Copy the full monorepo (you can optimize this later)
+COPY . .
+
+# Build only the frontend app using Nx
+RUN npm run build:frontend
+
+# Stage 2: Serve with Nginx
+FROM nginx:alpine AS production
+
+# Copy static frontend build to nginx public dir
+COPY --from=development /app/dist/apps/frontend /usr/share/nginx/html
+
+# Expose the port and run nginx
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
