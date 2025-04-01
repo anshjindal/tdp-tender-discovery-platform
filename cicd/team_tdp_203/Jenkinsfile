@@ -82,6 +82,16 @@ pipeline {
                 }
             }
         }
+        
+        stage('Deploy to Kubernetes') {
+            steps {
+                
+                sh 'kubectl apply -f cicd/team_tdp_203/k8s/'
+
+            
+                sh 'kubectl get pods -n team_tdp_203'
+            }
+        }
     }
 
     post {
@@ -89,5 +99,6 @@ pipeline {
             // Clean up Docker images
             sh 'docker system prune -f'
         }
+        
     }
 }
