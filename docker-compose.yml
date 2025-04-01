@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile.backend
+    container_name: nx-backend
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    env_file:
+      - apps/backend/.env
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile.frontend
+    container_name: nx-frontend
+    ports:
+      - "${PORT:-4000}:80"
+    env_file:
+      - apps/frontend/.env
+    depends_on:
+      - backend
+    restart: unless-stopped
