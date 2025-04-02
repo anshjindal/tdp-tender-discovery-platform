@@ -4,6 +4,10 @@ pipeline {
     environment {
         NODE_VERSION = '18.17.0'
         NPM_VERSION = '9.6.7'
+        DOCKER_REGISTRY = 'your-registry.com'  // Replace with your Docker registry
+        DOCKER_CREDENTIALS_ID = 'docker-credentials'  // Replace with your Docker credentials ID
+        BRANCH_NAME = 'feat_tdp_203'
+        COMMIT_SHA = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
     }
 
     stages {
@@ -31,6 +35,54 @@ pipeline {
             }
         }
 
+        stage('Build and Push Backend') {
+            steps {
+                script {
+                    // Build backend image
+                    sh """
+                        docker build -t ${DOCKER_REGISTRY}/tdp-backend:${BRANCH_NAME}-${COMMIT_SHA} \
+                        -t ${DOCKER_REGISTRY}/tdp-backend:latest \
+                        -f cicd/team_tdp_203/Dockerfile.backend .
+                    """
+                    
+                    // Push backend image
+                    withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", 
+                                                    usernameVariable: 'DOCKER_USER', 
+                                                    passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh """
+                            echo ${DOCKER_PASSWORD} | docker login ${DOCKER_REGISTRY} -u ${DOCKER_USER} --password-stdin
+                            docker push ${DOCKER_REGISTRY}/tdp-backend:${BRANCH_NAME}-${COMMIT_SHA}
+                            docker push ${DOCKER_REGISTRY}/tdp-backend:latest
+                        """
+                    }
+                }
+            }
+        }
+        
+        stage('Build and Push Frontend') {
+            steps {
+                script {
+                    // Build frontend image
+                    sh """
+                        docker build -t ${DOCKER_REGISTRY}/tdp-frontend:${BRANCH_NAME}-${COMMIT_SHA} \
+                        -t ${DOCKER_REGISTRY}/tdp-frontend:latest \
+                        -f cicd/team_tdp_203/Dockerfile.frontend .
+                    """
+                    
+                    // Push frontend image
+                    withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", 
+                                                    usernameVariable: 'DOCKER_USER', 
+                                                    passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh """
+                            echo ${DOCKER_PASSWORD} | docker login ${DOCKER_REGISTRY} -u ${DOCKER_USER} --password-stdin
+                            docker push ${DOCKER_REGISTRY}/tdp-frontend:${BRANCH_NAME}-${COMMIT_SHA}
+                            docker push ${DOCKER_REGISTRY}/tdp-frontend:latest
+                        """
+                    }
+                }
+            }
+        }
+        
         stage('Deploy to Kubernetes') {
             steps {
                 
@@ -44,7 +96,9 @@ pipeline {
 
     post {
         always {
-            echo 'Pipeline completed, including Kubernetes deployment.'
+            // Clean up Docker images
+            sh 'docker system prune -f'
         }
+        
     }
 }
