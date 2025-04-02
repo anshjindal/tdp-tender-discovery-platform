@@ -173,3 +173,141 @@ tbody tr td{
 .table-placeholder th:last-child {
   border-top-right-radius: 7.45px;
 }
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.button-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  margin-right: 8px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes loading-pulse {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* Skeleton loading animation */
+.skeleton-loading {
+  @apply bg-gray-200 rounded-md;
+  animation: loading-pulse 1.5s infinite ease-in-out;
+}
+
+/* Global overlay styles */
+.loading-overlay {
+  @apply fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center z-[1000];
+}
+
+/* Custom base layer styles */
+@layer base {
+  .nav-bg-color {
+    @apply bg-[#f1eef8] text-black text-xs font-bold;
+    &:focus {
+      @apply bg-white rounded-[15px];
+    }
+  }
+  
+  .bg-gray-800 {
+    @apply bg-[#f1eef8];
+  }
+}
+
+/* Table styles - keep if still using */
+.table-placeholder {
+  @apply w-full text-left;
+  
+  thead {
+    @apply border border-solid border-[rgba(85,86,90,0.12)];
+  }
+  
+  td, th {
+    @apply px-6 py-2 max-w-[300px];
+  }
+  
+  th {
+    @apply bg-[#FCFCFC];
+    
+    &:first-child {
+      @apply rounded-tl-[7.45px];
+    }
+    
+    &:last-child {
+      @apply rounded-tr-[7.45px];
+    }
+  }
+  
+  tbody tr td {
+    @apply border-0 border-b border-r border-solid border-[rgba(85,86,90,0.12)] px-2 py-4;
+  }
+}
+
+/* Custom components */
+@layer components {
+  .upload-container {
+    @apply max-w-md mx-auto p-6 bg-white rounded-lg shadow-md;
+  }
+  
+  .file-input-label {
+    @apply inline-block px-4 py-2 bg-gray-600 text-white rounded-md cursor-pointer transition-colors;
+    &:hover {
+      @apply bg-gray-700;
+    }
+    &:disabled {
+      @apply opacity-70 cursor-not-allowed;
+    }
+  }
+  
+  .progress-bar {
+    @apply w-full h-2 bg-gray-200 rounded-full overflow-hidden;
+    
+    &-fill {
+      @apply h-full bg-blue-600 transition-[width] duration-300;
+    }
+  }
+  
+  .message {
+    @apply p-3 my-4 rounded-md border;
+    
+    &-success {
+      @apply bg-green-100 text-green-800 border-green-200;
+    }
+    
+    &-error {
+      @apply bg-red-100 text-red-800 border-red-200;
+    }
+  }
+  
+  .nlp-results {
+    @apply mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200;
+  }
+}

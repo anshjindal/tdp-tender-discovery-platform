@@ -14,12 +14,13 @@ layout = spaCyLayout(nlp)
 
 def load_capability_keywords():
     """Load capability keywords from a configuration file or database."""
-
     try:
         with open("capabilities.txt", "r") as f:
             return [line.strip() for line in f if line.strip()]
     except FileNotFoundError:
-        return ["tech services", "maintenance", "web design", "IT support", "cloud services"]
+        return ["tech services", "maintenance", "web design", "IT support", "cloud services",
+                "technical support", "software development", "IT infrastructure", 
+                "cybersecurity", "cloud solutions", "data analytics", "mobile app development"]
 
 capability_keywords = load_capability_keywords()
 
@@ -55,6 +56,7 @@ def upload_pdf():
         pdf_data = file.read()
         
         doc = layout(pdf_data)
+        full_text = doc.text.lower()  # Convert to lowercase for easier keyword matching
 
         analyzed_doc = nlp(doc.text)
         sentences_with_dates = [sent.text for sent in analyzed_doc.sents if any(ent.label_ == "DATE" for ent in sent.ents)]
@@ -74,7 +76,8 @@ def upload_pdf():
             "verdict": verdict,
             "explanation": explanation,
             "matched_keywords": matched_keywords,
-            "processing_time_seconds": processing_time
+            "processing_time_seconds": processing_time,
+            "capability_verdict": verdict  # Added capability_verdict field for compatibility
         })
 
     except Exception as e:

@@ -1,35 +1,30 @@
+import axios from 'axios';
 
-import axios from "axios";
-// Set config defaults when creating the instance
-const instance = axios.create();
-  
-  // Alter defaults after instance has been created
-// Add a request interceptor
-instance.interceptors.request.use(function (config) {
-    // Do something before request is sent
+const instance = axios.create({
+  baseURL: 'http://localhost:3000/api/v1',
+  timeout: 10000,
+});
 
-    config.headers.Authorization =  `Bearer ${localStorage.getItem("access_token")}` ;
- 
-    return config;
-  }, function (error) {
-    // Do something with request error
-    
-    return Promise.reject(error);
-  });
+instance.interceptors.request.use((config) => {
+  const token = localStorage.getItem('access_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
-// Add a response interceptor
-instance.interceptors.response.use(function (response) {
-    // Any status code that lie within the range of 2xx cause this function to trigger
-    // Do something with response data
-    if(response&&response.data) return response
-    return response;
-  }, function (error) {
-    if(error?.response?.data){
-
-      return error.response.data
+instance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response) {
+      return Promise.reject({
+        message: error.response.data?.message || 'Request failed',
+        status: error.response.status,
+        data: error.response.data
+      });
     }
-    // Any status codes that falls outside the range of 2xx cause this function to trigger
-    // Do something with response error
     return Promise.reject(error);
-  });
-  export default instance;
+  }
+);
+
+export default instance;
